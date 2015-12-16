@@ -26,3 +26,21 @@ k = plot(C2(:,1),C2(:,2),'+r');
 l = plot(K.Mu(1,1),K.Mu(1,2),'xg');
 m = plot(K.Mu(2,1),K.Mu(2,2),'xk');
 legend([h,k,l,m],'Cluster 1','Cluster 2','Mean cluster 1','Mean cluster 2');
+
+%% Linear regression
+X = [ones(size(K.DataPoints,1),1) K.DataPoints];
+Y = K.Clusters;
+b = Y\X;
+
+C1 = X(Y==1,:)*b';
+C2 = X(Y==2,:)*b';
+
+figure; hold on;
+plot(C1); plot(C2); legend('Class 1','Class 2');
+
+if (min(C1) > max(C2))
+    boundary = 0.5*(min(C1) + max(C2));
+else
+    boundary = 0.5*(min(C2) + max(C1));
+end
+plot(ones(size(C1,1),1)*boundary);
