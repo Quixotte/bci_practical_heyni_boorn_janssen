@@ -8,18 +8,18 @@ classdef KMeans
     end
     
     methods
-        
-        function this = KMeans(n)
-            if nargin > 0
-                if isnumeric(n)
-                    this.N = n;
-                    this.Mu = zeros(this.N,0);
-                else
-                    error('N must be numeric')
+        function [] addDataPoint(this, point)
+            
+            function this = KMeans(n)
+                if nargin > 0
+                    if isnumeric(n)
+                        this.N = n;
+                        this.Mu = zeros(this.N,0);
+                    else
+                        error('N must be numeric')
+                    end
                 end
             end
         end
+        
     end
-    
-end
-
