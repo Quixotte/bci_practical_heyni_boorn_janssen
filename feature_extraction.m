@@ -36,6 +36,28 @@ classlabels(1:S/2) = 1;
 classlabels(S/2+1:end) = 2;
 Data = [Data classlabels];
 
-[coeff1,score1,latent] = princomp(Data);
+[coeff,score,latent,~,~,mu] = pca(Data);
 A=cumsum(latent)./sum(latent);
-vectors = score(:,A<0.95);
+dimensions = find(A<0.95)';
+
+%reconstruct original samples from component space
+t = score(:,dimensions)*coeff(:,dimensions)' + repmat(mu,S,1);
+
+%construct new point in PCA space
+p = Data(7,:); %sample
+point = (p-mu)/coeff(:,dimensions)'; %sample in PCA space
+
+%% create train set on data
+PCA = score(:,dimensions);
+
+K = KMeans(2);
+K.addDataPoint(PCA(1,:),1);
+K.addDataPoint(PCA(end,:),2);
+
+labels = classlabels([1,end,2:end-1]);
+for i=2:S-1
+    K.addDataPoint(PCA(i,:));
+end
+
+clLabels = K.Clusters;
+pctCorrect = [num2str((sum(clLabels==labels) / S)*100), ' %']
