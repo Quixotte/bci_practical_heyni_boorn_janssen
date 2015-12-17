@@ -26,6 +26,7 @@ for s=1:S
         P1(s,i,2:end-1) = 2*P1(s,i,2:end-1);
     end
 end
+
 f = Fs*(0:(L/2))/L;
 
 IND = find(f<=45);
@@ -41,12 +42,30 @@ A=cumsum(latent)./sum(latent);
 dimensions = find(A<0.95)';
 
 %reconstruct original samples from component space
-t = score(:,dimensions)*coeff(:,dimensions)' + repmat(mu,S,1);
+orig = score(:,dimensions)*coeff(:,dimensions)' + repmat(mu,S,1);
 
 %construct new point in PCA space
 p = Data(7,:); %sample
 point = (p-mu)/coeff(:,dimensions)'; %sample in PCA space
+%% Create test data
+counter_2 = 0;
 
+test_signal = 0.7*rand(C,L).*sin(2*pi*[50;50;51;52;48;41;50;50;50;50]*t)+2*randn(C,L);
+testF = zeros(C,L/2+1);
+for i=1:C
+    Y = fft(test_signal(i,:));
+    Y = abs(Y./L);
+    testF(i,:) = 2*Y(1:L/2+1);
+    testF(i,2:end-1) = 2*testF(i,2:end-1);
+end
+testF = testF(:,IND);
+
+%get PCA representation
+C1 = ([testF(:)',1]-mu)/coeff(:,dimensions)';
+C2 = ([testF(:)',2]-mu)/coeff(:,dimensions)';
+
+%this does not work yet: all the data points in both test and train set lie
+%closer to cluster 1 than to cluster 2
 %% create train set on data
 PCA = score(:,dimensions);
 
