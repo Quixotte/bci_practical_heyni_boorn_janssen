@@ -1,0 +1,12 @@
+value = zeros(1,10000);
+cd = ClassDecider(0.995,0.3);
+
+for i=1:10000
+    value(1,i) = cd.value;
+    if (i==1000)
+        cd = cd.putClass(1);
+    end
+    sleep(
+end
+
+plot(value);

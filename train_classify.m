@@ -1,5 +1,6 @@
+%% Create synthetic training set (25 samples per class of 300 timepoints each a 250 Hz)
 clear all;
-datapoint = zeros(10,300,50);%channel, timepoints, sample
+datapoint = zeros(10,100,50);%channel, timepoints, sample
 
 Fs = 250;
 %T = 1/Fs;             % Sampling period
@@ -8,7 +9,7 @@ C = size(datapoint,1);
 S = size(datapoint,3);
 T = 1/Fs;             % Sampling period
 t = (0:L-1)*T;        % Time vector
-pca_th = 0.75;
+pca_th = 0.75; %find the PCA components that explain 75% of the data
 %nyquist = L/2;
 
 for sample=1:S/2
@@ -18,6 +19,7 @@ for sample=S/2+1:S
     datapoint(:,:,sample) = 0.7*rand(C,L).*sin(2*pi*[20;20;21;22;18;11;20;20;20;20]*t)+2*randn(C,L);
 end
 
+%% Feature extraction
 P1 = zeros(S,C,L/2+1);
 for s=1:S
     for i=1:C
@@ -30,20 +32,20 @@ end
 
 f = Fs*(0:(L/2))/L;
 
-IND = find(f<=45);
+IND = find(f<=45); %filter out all frequencies above 45 Hz
 P1 = P1(:,:,IND);
 Data = P1(:,:);
-classlabels = zeros(S,1);
+classlabels = zeros(S,1); %adjust this for real data
 classlabels(1:S/2) = 1;
 classlabels(S/2+1:end) = 2;
-Data = [Data classlabels];
+Data = [Data classlabels]; %also encode classlabels before PCA
 
 [coeff,score,latent,~,~,mu] = pca(Data);
 A = cumsum(latent)./sum(latent);
 dimensions = find(A<pca_th)';
 
-%reconstruct original samples from component space
-orig = score(:,dimensions)*coeff(:,dimensions)' + repmat(mu,S,1);
+% %reconstruct original samples from component space
+% orig = score(:,dimensions)*coeff(:,dimensions)' + repmat(mu,S,1);
 
 %construct new point in PCA space
 p = Data(7,:); %sample
