@@ -1,6 +1,5 @@
-addpath ("buffer_bci-master/utilities")
-addpath ("Data")
-run initPaths.m;
-filePath = "S102/S102R07.edf";
+addpath ('buffer_bci-master/utilities')
+run initPaths;
+filePath = 'S002/S002R07.edf';
 
 [hdr, record] = edfread(filePath);
