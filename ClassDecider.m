@@ -17,7 +17,7 @@ classdef ClassDecider
         end
         
         function this = updateValue(this)
-            ms = round(toc(this.time) * 1000)
+            ms = round(toc(this.time) * 1000);
             this.value = this.value * ((1 - this.decay).^ms);
             this.time = tic;
         end
