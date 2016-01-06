@@ -12,13 +12,13 @@ classdef ClassDecider
     methods
         function this = putClass(this,class)
             ms = round(toc(this.time) * 1000);
-            this.value = (this.value+(class-this.value)*this.increment) * ((1 - this.decay).^ms);
+            this.value = this.value+(class-this.value)*this.increment - (this.value*(1 - this.decay.^ms));
             this.time = tic;
         end
         
         function this = updateValue(this)
             ms = round(toc(this.time) * 1000);
-            this.value = this.value * ((1 - this.decay).^ms);
+            this.value = this.value - (this.value*(1 - this.decay.^ms));
             this.time = tic;
         end
         

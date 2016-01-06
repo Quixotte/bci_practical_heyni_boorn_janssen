@@ -1,19 +1,10 @@
 function [S] = brainracer(varargin)
-%MATLABTETRIS A MATLAB version of the classic game Tetris.
-% A matlab game where a car is racing on a road. Subscribes to the events
-% on the blackboard. Only listens to the events 'left' and 'right'
-%
-% Pushing the following keys has the listed effect:
-%
-% Key     Effect
-% ------------------
-% n       Starts a new game in the middle of any game.
-% p       Pauses/Unpauses game play.
-% s       Starts the new game (alternative to pushing the start button).
-%
-% Other tips:
-%
+% BrainRacer by Stef
 
+decay = 0.001;
+increment = 0.5;
+decision_boundary = 0.7;
+C = ClassDecider(decay, increment);
 
 f_clr = [.741 .717 .42];
 S.fig = figure('units','pixels',...
@@ -53,10 +44,14 @@ stop_y = 0;
 start_size = 25;
 stop_size = 200;
 
+steering_rect_width = 300;
+steering_rect_height = 75;
+steering_rect_y_pos = 500;
+
 [car_image, map, alpha_incoming] = imread('images/car_after_crop.png');
 [our_car_image, map, alpha_our] = imread('images/cabrio.jpg');  
 street_image=imread('images/street.png');
-incoming_car_pos = [1, 0]; %false = left, true = right
+incoming_car_pos = getRandomSeries(10, 3, 0.5); %10= series of cars, 3 is max_series, 0.5 = p_left
 our_car_pos = 1;
 incoming_index = 0;
 running = true;
@@ -124,6 +119,56 @@ while(running)
 
         our_car_handle = imshow(our_car_image);
         set(our_car_handle, 'AlphaData', alpha_our);
+        
+        S.steering_box = axes('units','pix',...
+                 'position',[center-steering_rect_width/2 
+                            steering_rect_y_pos 
+                            steering_rect_width 
+                            steering_rect_height],...
+                 'color',[1 1 240/255],...
+                 'xtick',[],'ytick',[],...
+                 'xlim',[-.1 7.1],...
+                 'ylim',[-.1 7.1],...
+                 'visible','on');
+        
+        S.left_boundary = axes('units','pix',...
+                 'position',[center-(steering_rect_width/2)+(1-decision_boundary)*steering_rect_width/2 
+                            steering_rect_y_pos 
+                            2 
+                            steering_rect_height],...
+                 'color',[0 0 0],...
+                 'xtick',[],'ytick',[],...
+                 'xlim',[-.1 7.1],...
+                 'ylim',[-.1 7.1],...
+                 'visible','on');  
+        S.right_boundary = axes('units','pix',...
+                 'position',[center + decision_boundary*steering_rect_width/2
+                            steering_rect_y_pos 
+                            2 
+                            steering_rect_height],...
+                 'color',[0 0 0],...
+                 'xtick',[],'ytick',[],...
+                 'xlim',[-.1 7.1],...
+                 'ylim',[-.1 7.1],...
+                 'visible','on');
+        x_1 = [center + C.value * steering_rect_width/2, center];
+        
+        S.steering_value = axes('units','pix',...
+                 'position',[min(x_1)
+                            steering_rect_y_pos
+                            max(x_1) - min(x_1)
+                            steering_rect_height],...
+                 'color',[1 235/255 0],...
+                 'xtick',[],'ytick',[],...
+                 'xlim',[-.1 7.1],...
+                 'ylim',[-.1 7.1],...
+                 'visible','on');
+        
+        if mod(i,5) ==0
+            C = C.updateValue();
+            C.value
+        end
+            
         drawnow()
     end
     toc
@@ -138,13 +183,16 @@ function [] = fig_kpfcn(varargin)
 % Figure (and pushbutton) keypressfcn
     switch varargin{2}.Key
         case 'rightarrow'
-            fprintf('wopwop, rightarrow');
-            our_car_pos = 1;
+            C = C.putClass(1);
+            if C.value > decision_boundary
+               our_car_pos=1; 
+            end
         case 'leftarrow'
-            fprintf('wopwop, leftarrow');
-            our_car_pos = 0;
+            C = C.putClass(-1);
+            if C.value < -decision_boundary
+                our_car_pos = 0;
+            end
         case 'q'
-            fprintf('user wants to stop');
             running = false;
         otherwise
     end

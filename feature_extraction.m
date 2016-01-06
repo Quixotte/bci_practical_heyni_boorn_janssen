@@ -1,12 +1,12 @@
 clear all;
 datapoint = zeros(10,300,50);%channel, timepoints, sample
 
-Fs = 250;
+Fs = 160;
 %T = 1/Fs;             % Sampling period
 L = size(datapoint,2);            % Length of signal
 C = size(datapoint,1);
 S = size(datapoint,3);
-T = 1/Fs;             % Sampling period
+T = 0.1/Fs;             % Sampling period
 t = (0:L-1)*T;        % Time vector
 pca_th = 0.75;
 %nyquist = L/2;
@@ -14,6 +14,7 @@ pca_th = 0.75;
 for sample=1:S/2
     datapoint(:,:,sample) = 0.7*rand(C,L).*sin(2*pi*[50;50;51;52;48;41;50;50;50;50]*t)+2*randn(C,L);
 end
+
 for sample=S/2+1:S
     datapoint(:,:,sample) = 0.7*rand(C,L).*sin(2*pi*[20;20;21;22;18;11;20;20;20;20]*t)+2*randn(C,L);
 end
