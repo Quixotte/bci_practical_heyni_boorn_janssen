@@ -53,8 +53,8 @@ stop_y = 0;
 start_size = 25;
 stop_size = 200;
 
-[car_image, map, alpha_green] = imread('images/car_after_crop.png');
-[our_car_image, map, alpha_yellow] = imread('images/cabrio.jpg');  
+[car_image, map, alpha_incoming] = imread('images/car_after_crop.png');
+[our_car_image, map, alpha_our] = imread('images/cabrio.jpg');  
 street_image=imread('images/street.png');
 incoming_car_pos = [1, 0]; %false = left, true = right
 our_car_pos = 1;
@@ -68,7 +68,7 @@ while(running)
         incoming_index = 1;
     end
     for i = 0:max_i
-        clf('reset');
+        clf(S.fig, 'reset');
         set(S.fig, 'keypressfcn',@fig_kpfcn);
         % This creates the 'background' axes
         ha = axes('units','normalized', ...
@@ -101,8 +101,8 @@ while(running)
                  'ylim',[-.1 7.1],...
                  'visible','off');
 
-        h = imshow(car_image);
-        set(h, 'AlphaData', alpha_green);
+        incoming_car_handle = imshow(car_image);
+        set(incoming_car_handle, 'AlphaData', alpha_incoming);
         
         current_size = stop_size;
         current_x = left_road_center_stop;
@@ -122,8 +122,8 @@ while(running)
                  'ylim',[-.1 7.1],...
                  'visible','off');
 
-        h = imshow(our_car_image);
-        set(h, 'AlphaData', alpha_yellow);
+        our_car_handle = imshow(our_car_image);
+        set(our_car_handle, 'AlphaData', alpha_our);
         drawnow()
     end
     toc
