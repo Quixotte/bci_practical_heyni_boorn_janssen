@@ -6,19 +6,15 @@ classdef KMeans < handle
         Clusters = zeros(0,0);
         N; %number of clusters
         Mu; %means of clusters
+        S;
     end
     
     methods
         %adds a new datapoint to the database, cluster_label is optional as
         %long as some datapoints eventually get cluster labels
-        function addDataPoint(this, point, cluster_label)
-            if (nargin < 3)
-                cluster_label = 0;
-            end
-            
-            sz = size(point,2);
-            this.DataPoints(end+1,1:sz) = point;
-            this.Clusters(end+1,1) = cluster_label;
+        function addDataPoint(this, point)            
+            this.DataPoints(end+1,1:this.S) = point;
+            this.Clusters(end+1,1) = 0;
             update(this);
         end
         
@@ -26,40 +22,32 @@ classdef KMeans < handle
         function update(this)
             currentLabels = this.Clusters;
             
-            %check if all clusters have elements
-            for i = 1:this.N
-                if(sum(find(currentLabels==i)) == 0)
-                    return;
-                end
-            end
-            
             %compute new means and reassign data points to clusters, until
             %nothings changes anymore
             while(true)
-                nextLabels = zeros(size(currentLabels,1),1);
                 updateMu(this);
                 
                 for i=1:size(this.DataPoints,1)
                     %assign label of cluster with the mean closest to each
                     %point
                     dist = getEuclideanDistance(this, this.DataPoints(i,:));
-                    nextLabels(i,1) = find(dist == min(dist));
+                    this.Clusters(i) = find(dist == min(dist));
                 end
                 
-                if(nextLabels==currentLabels)
+                if(this.Clusters == currentLabels)
                     break;
                 end
                 
-                currentLabels = nextLabels;
+                currentLabels = this.Clusters;
             end
-            
-            this.Clusters = currentLabels;
         end
         
         %update the means of each cluster
         function updateMu(this)
             for i=1:this.N
-                this.Mu(i,1:size(this.DataPoints,2)) = mean(this.DataPoints(this.Clusters == i,:),1);
+                if(sum(this.Clusters == i) > 0)
+                    this.Mu(i,:) = mean(this.DataPoints(this.Clusters == i,:),1);
+                end
             end
         end
         
@@ -73,11 +61,12 @@ classdef KMeans < handle
         
         %creates a new instance of KMeans, with N being the number of
         %clusters
-        function this = KMeans(n)
+        function this = KMeans(n,S)
             if nargin > 0
                 if isnumeric(n)
                     this.N = n;
-                    this.Mu = zeros(this.N,0);
+                    this.S = S;
+                    this.Mu = rand(this.N,S);
                 else
                     error('N must be numeric')
                 end

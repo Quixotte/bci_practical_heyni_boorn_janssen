@@ -1,13 +1,13 @@
 clear all; clc;
 
 %create two-class cluster KMeans
-K = KMeans(2);
+K = KMeans(2,2);
 
 %add two known samples for initial clustering
 m1 = [0 0];
 m2 = [10 0];
-K.addDataPoint(m1,1); %class 1
-K.addDataPoint(m2,2); %class 2
+K.addDataPoint(m1); %class 1
+K.addDataPoint(m2); %class 2
 
 %add extra random data points
 for i=1:50
