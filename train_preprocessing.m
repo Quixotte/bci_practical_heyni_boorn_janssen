@@ -5,9 +5,9 @@ L = size(D,2); %length of signal
 S = size(D,3); %trial
 
 P1 = zeros(S,C,L/2+1);
-D = preproc(D,opt);
 
 for s=1:S
+    D(:,:,s) = preproc(D(:,:,s),opt);
     for i=1:C
         Y = fft(D(:,:,s));
         P2 = abs(Y./L);

@@ -4,7 +4,7 @@ load('dataset/processedDataset.mat');
 %% Create clustering classifiers and train
 IND = randperm(size(train_set,1)); %randomize training data
 train_set = train_set(IND,:);
-labelstr = labelstr(IND,:);
+labelstr = labelstr(IND);
 clusters = 20;
 
 Left = KMeans(clusters,size(train_set,2));
@@ -21,8 +21,8 @@ for i=1:size(train_set,1)
 end
 
 %% Test on train set
-SET = test_same_set;
-LABELS = labelstes;
+SET = train_set;
+LABELS = labelstr;
 S = size(SET,1);
 conf = zeros(3);
 predictions = zeros(S,1);
