@@ -4,16 +4,16 @@ load('dataset/right.mat');
 load('dataset/baselines.mat');
 
 %% Settings for creation of train and test set
-users_ratio = 0.4; %percentage of users for train set
+users_ratio = 0.1; %percentage of users for train set
 bsamples = 5; %number of baselines per user
 trial_ratio = 0.5; %percentage of trials for use in train set
 fs = 160; %sampling frequency of EEG cap
-T = 0.7; %number of seconds in sample
+T = 2; %number of seconds in sample
 pca_th = 15; %select the components which explain at most 80% of the variation of the data
 max_frequency = 26; %maximum frequency of signals to analyze
 min_frequency = 8;
-channels = [8:14 18 16 20 2 6];
-%% Create train and test set
+channels = [2 6 8:14 16 18 20];
+% Create train and test set
 N = size(left,1); %number of users in total
 samples = T*fs;
 users_train = sort(randperm(size(left,1),floor(users_ratio*N)));
@@ -94,13 +94,20 @@ for user = 1:N
     end
 end
 
-%% perform the preprocessing on the training data
-opt = struct('fs',fs,'visualize',0,'badchrm',0,'badtrrm',0,'spatialfilter','none'); %preprocessing options
+% perform the preprocessing on the training data
+opt = struct('fs',fs,'visualize',0,'badchrm',0,'badtrrm',0); %preprocessing options 'spatialfilter','none'
 [~,train_set,mu,coeff,freq,latent] = train_preprocessing(train, fs, pca_th, opt,min_frequency, max_frequency);
 %data is fft data, train_set is data transformed to pca space
 
 % perform the preprocessing on the test data
 [~,test_same_set] = test_preprocessing(test_same, fs, opt,min_frequency,max_frequency, mu, coeff);
 [~,test_different_set] = test_preprocessing(test_different, fs, opt,min_frequency, max_frequency, mu, coeff);
+
+% Plot
+m1 = mean(train_set(labelstr==1,:),1); s1 = std(train_set(labelstr==1,:),1);
+m2 = mean(train_set(labelstr==2,:),1); s2 = std(train_set(labelstr==2,:),1);
+errorbar(m1,s1); hold on;
+errorbar(m2,s2);
+
 %% Export the files
 save('dataset/processedDataset.mat','train_set', 'test_same_set', 'test_different_set', 'labelstr', 'labelstes', 'labelsted', 'freq');

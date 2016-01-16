@@ -9,8 +9,8 @@ P1 = zeros(S,C,L/2+1);
 for s=1:S
     D(:,:,s) = preproc(D(:,:,s),opt);
     for i=1:C
-        Y = fft(D(:,:,s));
-        P2 = abs(Y./L);
+        Y = fft(D(i,:,s));
+        P2 = abs(Y/L);
         P1(s,i,:) = 2*P2(1:L/2+1);
         P1(s,i,2:end-1) = 2*P1(s,i,2:end-1);
     end
