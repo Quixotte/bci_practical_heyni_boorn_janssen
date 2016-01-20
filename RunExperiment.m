@@ -24,7 +24,6 @@ state = [];
 endTest = false;
 while (~endTest) 
   [data,devents,state]=buffer_waitData([],[],state,'startSet',{'stimulus.epoch'},'trlen_samp',trlen_samp,'exitSet',{'data' 'stimulus.sequences' 'end'});
-  fprintf('yo');
   for ei=1:numel(devents)
         event=devents(ei);
         if( isequal('stimulus.sequences',event.type) && isequal('end',event.value) ) % end event
@@ -35,6 +34,6 @@ while (~endTest)
         
         %Insert Hector Classification
         C = 0;
-        sendClass(C);
+        sendEvent('feedback',C);
     end
 end
