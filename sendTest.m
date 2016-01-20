@@ -23,17 +23,7 @@ initsleepSec;
 state = [];
 endTest = false;
 while (~endTest) 
-  [data,devents,state]=buffer_waitData([],[],state,'startSet',{'stimulus.epoch'},'trlen_samp',trlen_samp,'exitSet',{'data' 'stimulus.sequences' 'end'});
-  for ei=1:numel(devents)
-        event=devents(ei);
-        if( isequal('stimulus.sequences',event.type) && isequal('end',event.value) ) % end event
-          endTest=true; 
-          fprintf('Discarding all subsequent events: exit\n');
-          break;
-        end;
-        
-        %Insert Hector Classification
-        C = 0;
-        sendEvent('feedback',C);
-    end
+  [data,devents,state]=buffer_waitData([],[],state,'startSet',{'feedback'},'trlen_samp',trlen_samp,'exitSet',{'data' 'stimulus.sequences' 'end'});
+    fprintf('Feedback?\n');
+
 end
