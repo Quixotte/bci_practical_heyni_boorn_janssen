@@ -1,10 +1,14 @@
 clear all; clc;
-load('dataset/left.mat');
-load('dataset/right.mat');
-load('dataset/baselines.mat');
+load('dataset/left_raw.mat');
+load('dataset/right_raw.mat');
+load('dataset/baselines_raw.mat');
 load('dataset/ch_pos.mat')
+
+% [42,32,7,53,54,2,49,56,94,48,62,22,26,60,31,83,29,15]
+% weak [80,63,95,67]
+
 %% Settings for creation of train and test set
-users_ratio = 1/86; %percentage of users for train set
+users_ratio = 50/86; %percentage of users for train set
 test_users = 5;
 bsamples = 60; %number of baselines per user
 trial_ratio = 0.8; %percentage of trials for use in train set
@@ -15,7 +19,7 @@ ppca = 0;
 frequency_band = [6 8 26 28];
 channels = 1:64;%[2 6 8:14 16 18 20];
 % Create train and test set
-N = size(left,1); %number of users in total
+N = size(left_raw,1); %number of users in total
 samples = T*fs;
 users_train = [7];%sort(randperm(N,floor(users_ratio*N)));
 users_test = 1:N;
@@ -48,10 +52,10 @@ for user = 1:N
         
         for code=1:2
             if (code == 1)
-                set = left{user,1};
+                set = left_raw{user,1};
                 train_trials = sort(randperm(size(set,1),floor(trial_ratio*size(set,1))));
             elseif (code == 2)
-                set = right{user,1};
+                set = right_raw{user,1};
                 train_trials = sort(randperm(size(set,1),floor(trial_ratio*size(set,1))));
             end
             
@@ -73,12 +77,24 @@ for user = 1:N
                 end
             end
         end
-    elseif sum(users_test == user) > 0        
+    elseif sum(users_test == user) > 0
+        %baselines
+        set = baselines_raw{user,1};
+        sz = size(set,2);
+        b = zeros(size(channels,2),samples);
+        for i=1:bsamples
+            start = ceil(rand*(sz-samples-1));
+            b = b+set(channels,start:start+samples-1);
+        end
+        baselines(:,:,user) = b;
+        b = mean(baselines_raw{user,1},2);
+        b = repmat(b(channels,:),1,samples);
+        
         for code=1:2
             if (code == 1)
-                set = left{user,1};
+                set = left_raw{user,1};
             elseif (code == 2)
-                set = right{user,1};
+                set = right_raw{user,1};
             end
             
             ntrials = size(set,1);

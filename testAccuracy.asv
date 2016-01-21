@@ -2,8 +2,8 @@ clear all; clc;
 load('dataset/processedDataset_raw.mat');
 
 %% Create gaussian EM
-Left = GaussianEM(2,size(train_setl,2),'Left');
-Right = GaussianEM(2,size(train_setr,2),'Right');
+Left = GaussianEM(20,size(train_setl,2),'Left');
+Right = GaussianEM(20,size(train_setr,2),'Right');
 
 Left.train(train_setl,3,1,0,2,4);
 Right.train(train_setr,3,1,0,2,4);
@@ -26,6 +26,7 @@ for i=1:size(setr,1)
     lpr = (datapoint-mul)/coeffl';
     rpr = (datapoint-mur)/coeffr';
     lp = Left.getLikelihood(lpr); rp = Right.getLikelihood(rpr);
+    [lp,rp];
     choice = datasample(find([lp,rp] == max([lp,rp])),1,'Replace',false);
     conf(2,choice) = conf(2,choice)+1;
 end

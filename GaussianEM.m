@@ -16,8 +16,10 @@ classdef GaussianEM < handle
         function P = getLikelihood(this,datapoint)
             P = zeros(1,this.K);
             for k=1:this.K
-                P(k) = this.Pi(k)*mvnpdf(datapoint,this.Mu(k,:),this.Sigma(:,:,k));
+                P(k) = mvnpdf(datapoint,this.Mu(k,:),this.Sigma(:,:,k));
             end
+            
+            P = P*this.Pi';
         end
         
         function this = GaussianEM(K,D,TITLE)
