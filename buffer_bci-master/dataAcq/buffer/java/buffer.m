@@ -98,6 +98,7 @@ switch cmd;
   hdr.data_type=hdr.dataType;
   hdr.channel_names=hdr.labels; % N.B. inconsistent names btw java and mex versions
   varargout{1}=hdr;
+
  
  case 'put_hdr';  
   if ( isfield(detail,'nChans') ) % java or mex-buffer version of the header field names

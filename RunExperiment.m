@@ -33,7 +33,7 @@ while (~endTest)
         end;
         
         %Insert Hector Classification
-        C = 0;
+        C = 'left';
         sendEvent('feedback',C);
     end
 end

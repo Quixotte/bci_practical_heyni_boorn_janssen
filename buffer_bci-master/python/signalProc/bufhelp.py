@@ -208,7 +208,7 @@ def createeventfilter(trigger):
         else:
             raise Exception("Bad trigger, function should return a bool.")
     elif isinstance(trigger,str):
-        func = lambda events: filter(lambda x: trigger == x.type,events)
+        func = lambda events: filter(lambda x: trigger == x.type, events)
     elif isinstance(trigger, tuple):
         if len(trigger) == 2:
             if isinstance(trigger[0],str):
@@ -333,3 +333,9 @@ def gatherdata(trigger, time, stoptrigger, milliseconds=False, verbose = True):
             break
             
     return (data,events, stopevents)
+
+connect()
+
+while(True):
+    feedback = waitforevent("feedback",2000)
+    print(feedback)

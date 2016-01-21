@@ -23,5 +23,5 @@ endTest = false;
 
 while(true)
     sendEvent('stimulus.epoch','start');
-    pause(1);
+    pause(0.5);
 end
