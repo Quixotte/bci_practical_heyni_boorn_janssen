@@ -21,7 +21,9 @@ end;
 initgetwTime;
 initsleepSec;
 state = [];
+windows = cell(1000,1);
 endTest = false;
+epoch = 1;
 while (~endTest) 
   [data,devents,state]=buffer_waitData([],[],state,'startSet',{'stimulus.epoch'},'trlen_samp',trlen_samp,'exitSet',{'data' 'stimulus.sequences' 'end'});
   for ei=1:numel(devents)
@@ -31,9 +33,13 @@ while (~endTest)
           fprintf('Discarding all subsequent events: exit\n');
           break;
         end;
-        
+        windows{epoch,1} = data;
+        epoch = epoch + 1;
         %Insert Hector Classification
-        C = 'left';
+        C = 1;
+        C = num2str(C);
         sendEvent('feedback',C);
     end
 end
+
+save('Data.mat','windows');
