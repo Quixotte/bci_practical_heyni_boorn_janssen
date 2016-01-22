@@ -3,7 +3,6 @@ run buffer_bci-master/utilities/initPaths.m
 
 buffhost='localhost';
 buffport=1972;
-trlen_samp = 50; % #samples per epoch
 
 phaseToRun=[];
 while ( isempty(phaseToRun) || ~isstruct(phaseToRun) || (phaseToRun.nchans==0) ) % wait for the buffer to contain valid data
@@ -15,6 +14,8 @@ while ( isempty(phaseToRun) || ~isstruct(phaseToRun) || (phaseToRun.nchans==0) )
   end;
   pause(1);
 end;
+
+trlen_samp = 1*phaseToRun.fsample; % #samples per epoch
 
 % set the real-time-clock to use
 
