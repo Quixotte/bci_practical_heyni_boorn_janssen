@@ -28,7 +28,7 @@ while (~endTest)
   [data,devents,state]=buffer_waitData([],[],state,'startSet',{'stimulus.epoch'},'trlen_samp',trlen_samp,'exitSet',{'data' 'stimulus.sequences' 'end'});
   for ei=1:numel(devents)
         event=devents(ei);
-        if( isequal('stimulus.sequences',event.type) && isequal('end',event.value) ) % end event
+        if( strcmp('stimulus.sequences',event.type) && strcmp('end',event.value) ) % end event
           endTest=true; 
           fprintf('Discarding all subsequent events: exit\n');
           break;
