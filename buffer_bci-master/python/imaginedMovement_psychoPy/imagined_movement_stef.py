@@ -273,7 +273,7 @@ thisTrial_2 = trials_2.trialList[0]  # so we can initialise stimuli with some va
 if thisTrial_2 != None:
     for paramName in thisTrial_2.keys():
         exec(paramName + '= thisTrial_2.' + paramName)
-inc_car_pos = [0 if j <10 else 1 for j in np.arange(20)]
+inc_car_pos = [1 if j <trials_2/2 else 2 for j in np.arange(trials_2)]
 np.random.shuffle( inc_car_pos )
 print "inc car pos:"
 print inc_car_pos
@@ -308,7 +308,7 @@ for i, thisTrial_2 in enumerate(trials_2):
         # get current time
         feedback_t = eventRequestClock.getTime()
         if feedback_t > 0.1:    #send req for feedback every 100 ms
-            sendEvent("stimulus.epoch", str(sendFeedbackCounter))
+            sendEvent("stimulus.epoch", str(inc_car_pos[i]))
             sendFeedbackCounter = 1 + sendFeedbackCounter
             eventRequestClock.reset()
         
