@@ -22,11 +22,11 @@ for s=1
     K = ds;
     
     IND = sort(crossvalind('Kfold', ds, K));
-    cp = classperf(labels);
+    cp1 = classperf(labels);
     
     channels = [2 6 8:14 16 18 20];
     opt = struct('fs',fs,'visualize',0,'badchrm',1,'badtrrm',1,'spatialfilter','slap','detrend',...
-        2,'ch_pos',ch_pos(:,channels), 'freqband',frequency_band);
+        1,'ch_pos',ch_pos(:,channels), 'freqband',frequency_band);
     
     for k=1:K
         test_ind = (IND == k); train_ind = ~test_ind;
@@ -48,50 +48,73 @@ for s=1
             end
         end
         
-        classperf(cp,f,test_ind);
+        classperf(cp1,f,test_ind);
     end
     
-    acc(1,s) = cp.CorrectRate
+    acc(1,s) = cp1.CorrectRate
 end
 
 %% train on first and classify on second
-users = 42;
-set = train(:,:,ismember(train_users,users));
-labels = labelstr(ismember(train_users,users),:);
-cp = classperf(labels);
+clear all; clc;
+load('dataset/processedDataset_raw.mat');
 
-channels = [2 6 8:14 16 18 20];
-opt = struct('fs',fs,'visualize',0,'badchrm',0,'badtrrm',0,'spatialfilter','slap','detrend',...
-    1,'ch_pos',ch_pos(:,channels), 'freqband',frequency_band);
-
-train_set = set(channels,:,:);
-train_labels = labels;
-test_set = train(channels,:,ismember(train_users,32));
-test_labels = labelstr(ismember(train_users,32),:);
-
-[clsfr,res,~,~] = train_ersp_clsfr(train_set,train_labels,opt);
-[f,fraw,p,X] = apply_ersp_clsfr(test_set,clsfr);
-cp = classperf(test_labels);
-
-newSet = zeros(0,0,0); newLabelsa = zeros(0,0); newLabelsb = zeros(0,0); conf = zeros(0,0);
-for i=1:size(test_set,3)
-    newSet(:,:,i) = test_set(:,:,i);
-    cl = apply_ersp_clsfr(test_set(:,:,i),clsfr);
-    if (cl < 0)
-        cl = 2;
-    else
-        cl = 1;
-    end
-    newLabelsa(i) = cl;
-    conf(i) = i/45;
+users = [42,32,7,53,54,2,49];
+acc = zeros(2,size(users,2));
+for k=1:size(users,2)
+    test_u = ismember(train_users,users(k));
+    set = train(:,:,~test_u);
+    labels = labelstr(~test_u,:);
     
-    if(size(newSet,3) < 3)
-        newLabelsb(i) = cl;
-    else
-        F = reshape(newSet(:,:,1:end-1),12*160,size(newSet,3)-1);
-        B = glmfit(F',newLabelsb'-1,'binomial','link','logit','weights',conf);
-        newLabelsb(i) = glmval(B,newSet(:,:,end),'logit');
+    channels = [2 6 8:14 16 18 20];
+    opt = struct('fs',fs,'visualize',0,'badchrm',0,'badtrrm',0,'spatialfilter','slap','detrend',...
+        1,'ch_pos',ch_pos(:,channels), 'freqband',frequency_band);
+    
+    train_set = set(channels,:,:);
+    train_labels = labels;
+    test_set = train(channels,:,test_u);
+    test_labels = labelstr(test_u,:);
+    
+    [clsfr,res,~,~] = train_ersp_clsfr(train_set,train_labels,opt);
+    cp1 = classperf(test_labels);
+    cp2 = classperf(test_labels);
+    newLabels = zeros(0,0); newSet = zeros(0,0,0);
+    
+%     [A,~,~,~] = preproc_ersp(test_set,opt);
+    A = reshape(test_set,size(test_set,1)*size(test_set,2),size(test_set,3));
+%     B = glmfit(A',train_labels-1,'binomial','link','logit');
+%     [C,~,~,~] = preproc_ersp(test_set,opt);
+%     C = reshape(C,size(C,1)*size(C,2),size(C,3));
+    
+    tsn = size(test_set,3); logreg = zeros(0,0);
+    linv = @(x) exp(x)./(exp(x)+1);
+    cl_neg = 0; cl_pos = 0;
+    for i=1:tsn
+        cl = apply_ersp_clsfr(test_set(:,:,i),clsfr);
+        if (cl < 0)
+            cl = 2;
+        else
+            cl = 1;
+        end
+        newLabels(i,:) = cl;
+        
+        if (i<2)
+            logres(i,:) = cl;
+        else
+            %             opt.nFold=i-1;
+            %             [clsfr2,res,~,~] = train_ersp_clsfr(test_set(:,:,1:i-1),logres(1:i-1),opt);
+            %             cl2 = apply_ersp_clsfr(test_set(:,:,i),clsfr2);
+            %             if (cl2 < 0)
+            %                 cl2 = 2;
+            %             else
+            %                 cl2 = 1;
+            %             end
+            %             logres(i,:) = round(cl2 + ((tsn-i)/tsn)*cl);
+            B = glmfit(A(:,1:(i-1))',logres(1:(i-1))-1,'binomial','link','logit','weights',(1/tsn):(1/tsn):((i-1)/tsn));
+            logres(i,:) = round(((glmval(B,A(:,i)','logit')+((tsn-i)/tsn)*(cl-1)))/2)+1;
+        end
     end
+    classperf(cp1,newLabels,1:size(test_labels,1));
+    classperf(cp2,logres,1:size(test_labels,1));
+    acc(1,k) = cp1.CorrectRate;
+    acc(2,k) = cp2.CorrectRate;
 end
-
-% classperf(cp,f,1:size(test_labels,1))
