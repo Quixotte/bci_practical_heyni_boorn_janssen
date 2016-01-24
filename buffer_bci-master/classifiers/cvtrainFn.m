@@ -143,7 +143,7 @@ if ( opts.outerSoln>0 )
 for spi=1:nSubProbs; % loop over sub-problems
    if ( ~opts.binsp ) spi=1:size(Y,2); end; % set spi to set sub-probs if not binary
    if ( opts.verb > -1 ) 
-      if ( nSubProbs>1 ) fprintf('(out/%2d)\t',spi); else; fprintf('(out)\t'); end;
+%       if ( nSubProbs>1 ) fprintf('(out/%2d)\t',spi); else; fprintf('(out)\t'); end;
    end
    seed=opts.seed; % reset seed for each sub-prob
    Ytrn = Y(:,spi);
@@ -161,17 +161,17 @@ for spi=1:nSubProbs; % loop over sub-problems
       if ( opts.binsp ) res.soln{spi,ci}=sol; else res.soln{ci}=sol; end;
       res.f(:,spi,ci)=f;      
       if( opts.verb > -1 ) 
-        if( numel(spi)>1 ) fprintf('['); end;
+%         if( numel(spi)>1 ) fprintf('['); end;
         for spii=1:numel(spi); % N.B. we need to loop as dv2conf etc. only work on 1 sub-prob at a time
-          fprintf('%0.2f/NA  ',conf2loss(dv2conf(Ytrn(:,spii),f(:,spii)),1,opts.lossType)); 
-          if( spii<numel(spi) ) fprintf('|'); end;
+%           fprintf('%0.2f/NA  ',conf2loss(dv2conf(Ytrn(:,spii),f(:,spii)),1,opts.lossType)); 
+%           if( spii<numel(spi) ) fprintf('|'); end;
         end
-        if(numel(spi)>1) fprintf(']'); if(numel(spi)<5) fprintf(' '); else fprintf('\n');end;
-        elseif ( numel(spi)==1 ) fprintf('\t'); end;
+%         if(numel(spi)>1) fprintf(']'); if(numel(spi)<5) fprintf(' '); else fprintf('\n');end;
+%         elseif ( numel(spi)==1 ) fprintf('\t'); end;
       end
    end % Cs
    if ( opts.verb>-1 )
-     if (size(Cs,2)>1 ) fprintf('\n'); end;
+%      if (size(Cs,2)>1 ) fprintf('\n'); end;
    end
 end
 end
@@ -193,11 +193,11 @@ for foldi=1:size(fIdxs,ndims(fIdxs));
 
       if ( opts.verb > -1 )
         if ( size(fIdxs,ndims(fIdxs))>1 ) 
-          if ( nSubProbs>1 ) fprintf('(%3d/%2d)\t',foldi,spi); 
-          else               fprintf('(%3d)\t',foldi); 
+%           if ( nSubProbs>1 ) fprintf('(%3d/%2d)\t',foldi,spi); 
+%           else               fprintf('(%3d)\t',foldi); 
           end
-        elseif ( nSubProbs>1 && spi>1 ) fprintf('|'); 
-        end
+%         elseif ( nSubProbs>1 && spi>1 ) fprintf('|'); 
+%         end
       end
       seed=opts.seed; % seed
       for ci=1:size(Cs,2);%siCs; % proc in sorted order
@@ -217,7 +217,7 @@ for foldi=1:size(fIdxs,ndims(fIdxs));
          if ( opts.binsp ) soln{spi,ci,foldi}=sol; else soln{ci,foldi}=sol; end;
          %res.fold.rt(:,ci,foldi,spi)=rt;
          res.fold.f(:,spi,ci,foldi)=f;
-         if ( opts.verb>-1 && numel(spi)>1 ) fprintf('['); end;
+%          if ( opts.verb>-1 && numel(spi)>1 ) fprintf('['); end;
          for spii=1:numel(spi); % N.B. we need to loop as dv2conf etc. only work on 1 sub-prob at a time
            tstIndi = tstInd(:,spii)| exInd(:,spii) ;
            res.tstf(tstIndi,spi(spii),ci)=f(tstIndi); % accumulate test prediction decision values
@@ -234,28 +234,28 @@ for foldi=1:size(fIdxs,ndims(fIdxs));
             % log the performance
             if ( opts.verb > -1 )
                if ( strcmp(opts.dispType,'bin') )
-                  fprintf('%0.2f/%0.2f',res.fold.trnbin(:,spi(spii),ci,foldi),...
-                          res.fold.tstbin(:,spi(spii),ci,foldi));
+%                   fprintf('%0.2f/%0.2f',
+%                     res.fold.trnbin(:,spi(spii),ci,foldi),res.fold.tstbin(:,spi(spii),ci,foldi);
                elseif ( strcmp(opts.dispType,'auc') )
-                  fprintf('%0.2f/%0.2f',res.fold.trnauc(:,spi(spii),ci,foldi),...
-                          res.fold.tstauc(:,spi(spii),ci,foldi));
+%                   fprintf('%0.2f/%0.2f',
+%                     res.fold.trnauc(:,spi(spii),ci,foldi),res.fold.tstauc(:,spi(spii),ci,foldi);
                 end
-                if ( spii<numel(spi) ) fprintf('|'); end;
+%                 if ( spii<numel(spi) ) fprintf('|'); end;
             end
          end % sub-probs
          if ( opts.verb>-1 )
-           if( numel(spi)>1 ) fprintf(']'); if ( numel(spi)<5 ) fprintf(' '); else fprintf('\n'); end;
-           elseif( size(Cs,2)>1 ) fprintf('\t'); end;
+%            if( numel(spi)>1 ) fprintf(']'); if ( numel(spi)<5 ) fprintf(' '); else fprintf('\n'); end;
+%            elseif( size(Cs,2)>1 ) fprintf('\t'); end;
          end
       end % Cs
-      if ( opts.verb > -1 && size(Cs,2)>1 ) fprintf('\n'); end;
+%       if ( opts.verb > -1 && size(Cs,2)>1 ) fprintf('\n'); end;
     end % loop over sub-problems
     if (opts.verb>-1 )
-      if ( size(fIdxs,ndims(fIdxs))==1 ) fprintf('\t'); 
-      elseif ( size(Cs,2)==1 ) fprintf('\n');
+%       if ( size(fIdxs,ndims(fIdxs))==1 ) fprintf('\t'); 
+%       elseif ( size(Cs,2)==1 ) fprintf('\n');
       end
     end
-end
+% end
 szRes=size(res.fold.trnbin); 
 res.fold.di=mkDimInfo(szRes,'perf',[],[],'subProb',[],opts.spDesc,'C',[],Cs,'fold',[],[],'dv');
 foldD=4;
@@ -300,7 +300,7 @@ elseif( opts.outerSoln<0 ) % re-train with the optimal parameters found
   for spi=1:nSubProbs; % loop over sub-problems
     if ( ~opts.binsp ) spi=1:size(Y,2); end; % set spi to set sub-probs if not binary
     if ( opts.verb > -1 ) 
-      if ( nSubProbs>1 ) fprintf('(opt/%2d)\t',spi); else; fprintf('(opt)\t'); end;
+%       if ( nSubProbs>1 ) fprintf('(opt/%2d)\t',spi); else; fprintf('(opt)\t'); end;
     end
     Ytrn = Y(:,spi);
     exInd = all(fIdxs(:,min(end,spi),:)==0,3) | Ytrn==0; Ytrn(exInd,:)=0; % excluded points    
@@ -313,13 +313,13 @@ elseif( opts.outerSoln<0 ) % re-train with the optimal parameters found
     % now tstf contains val fold predictions in training set, and opt predictions for the rest
     res.opt.tstf(exInd,spi)=f(exInd);
     if( opts.verb > -1 ) 
-      if( numel(spi)>1 ) fprintf('['); end;
+%       if( numel(spi)>1 ) fprintf('['); end;
       for spii=1:numel(spi); % N.B. we need to loop as dv2conf etc. only work on 1 sub-prob at a time
-        fprintf('%0.2f/NA  ',conf2loss(dv2conf(Ytrn(:,spii),f(:,spii)),1,opts.lossType)); 
-        if( spii<numel(spi) ) fprintf('|'); end;
+%         fprintf('%0.2f/NA  ',conf2loss(dv2conf(Ytrn(:,spii),f(:,spii)),1,opts.lossType)); 
+%         if( spii<numel(spi) ) fprintf('|'); end;
       end
-      if(numel(spi)>1) fprintf(']'); if(numel(spi)<5) fprintf(' '); else fprintf('\n');end;
-      elseif ( numel(spi)==1 ) fprintf('\n'); end;
+%       if(numel(spi)>1) fprintf(']'); if(numel(spi)<5) fprintf(' '); else fprintf('\n');end;
+%       elseif ( numel(spi)==1 ) fprintf('\n'); end;
     end
   end % spi
 elseif( opts.outerSoln==0 ) % estimate from per fold solutions
@@ -380,29 +380,29 @@ if ( ~all(exInd) && ~isempty(opts.calibrate) && ~isequal(opts.calibrate,0) ) % N
 end
 
 if ( opts.verb > -2 && size(fIdxs,ndims(fIdxs))>1)
-   if ( opts.verb > -1 ) fprintf('-------------------------\n'); end;
+%    if ( opts.verb > -1 ) fprintf('-------------------------\n'); end;
    for spi=1:size(res.trnbin,2); % loop over sub-problems
-      if ( size(res.trnbin,2)>1 ) fprintf('(ave/%2d)\t',spi); else; fprintf('(ave)\t'); end;
+%       if ( size(res.trnbin,2)>1 ) fprintf('(ave/%2d)\t',spi); else; fprintf('(ave)\t'); end;
       for ci=1:size(Cs,2);
          if ( ~opts.binsp || strcmp(opts.dispType,'bin') )
-            fprintf('%0.2f/%0.2f',res.trnbin(:,spi,ci),res.tstbin(:,spi,ci));
+%             fprintf('%0.2f/%0.2f',res.trnbin(:,spi,ci),res.tstbin(:,spi,ci));
          else
-            fprintf('%0.2f/%0.2f',res.trnauc(:,spi,ci),res.tstauc(:,spi,ci));
+%             fprintf('%0.2f/%0.2f',res.trnauc(:,spi,ci),res.tstauc(:,spi,ci));
          end
-         if( ci==optCi ) fprintf('*\t'); else fprintf(' \t'); end;
+%          if( ci==optCi ) fprintf('*\t'); else fprintf(' \t'); end;
       end
-      fprintf('\n');
+%       fprintf('\n');
    end
    if ( size(res.trnbin,2)>1 ) % cross problem average performance
-      fprintf('(ave/av)\t',spi); 
+%       fprintf('(ave/av)\t',spi); 
       for ci=1:size(Cs,2);
          if ( ~opts.binsp || strcmp(opts.dispType,'bin') )
-            fprintf('%0.2f/%0.2f\t',mean(res.trnbin(:,:,ci),2),mean(res.tstbin(:,:,ci),2));
+%             fprintf('%0.2f/%0.2f\t',mean(res.trnbin(:,:,ci),2),mean(res.tstbin(:,:,ci),2));
          else
-            fprintf('%0.2f/%0.2f\t',mean(res.trnauc(:,spi,ci),2),mean(res.tstauc(:,spi,ci),2));
+%             fprintf('%0.2f/%0.2f\t',mean(res.trnauc(:,spi,ci),2),mean(res.tstauc(:,spi,ci),2));
          end
       end
-      fprintf('\n');
+%       fprintf('\n');
    end
 end
 return;

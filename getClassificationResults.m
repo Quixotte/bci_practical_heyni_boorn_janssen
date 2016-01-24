@@ -1,0 +1,97 @@
+clear all; clc;
+% load('dataset/left_raw.mat');
+% load('dataset/right_raw.mat');
+% load('dataset/baselines_raw.mat');
+% load('dataset/ch_pos.mat');
+load('dataset/processedDataset_raw.mat');
+
+S = [42,32,7,53,54];
+
+subjects = size(S,2);
+acc = zeros(1,1);
+n=1;
+for s=1
+    [s,n]
+    % Classification results
+    %subjects ordered from best to worst: ;
+    users = S(1:s);
+    set = train(:,:,ismember(train_users,users));
+    labels = labelstr(ismember(train_users,users),:);
+    
+    ds = size(set,3);
+    K = ds;
+    
+    IND = sort(crossvalind('Kfold', ds, K));
+    cp = classperf(labels);
+    
+    channels = [2 6 8:14 16 18 20];
+    opt = struct('fs',fs,'visualize',0,'badchrm',1,'badtrrm',1,'spatialfilter','slap','detrend',...
+        2,'ch_pos',ch_pos(:,channels), 'freqband',frequency_band);
+    
+    for k=1:K
+        test_ind = (IND == k); train_ind = ~test_ind;
+        train_set = set(channels,:,train_ind);
+        train_labels = labels(train_ind,:);
+        test_set = set(channels,:,test_ind);
+        test_labels = labels(test_ind,:);
+        
+        [clsfr,res,~,~] = train_ersp_clsfr(train_set,train_labels,opt);
+        [f,fraw,p,X] = apply_ersp_clsfr(test_set,clsfr);
+        
+        for i=1:size(clsfr.spMx,2)
+            if (clsfr.spMx(i) == -1)
+                f(f < 0,:) = clsfr.spKey(i);
+            elseif (clsfr.spMx(i) == 1)
+                f(f >= 0,:) = clsfr.spKey(i);
+            else
+                'error!'
+            end
+        end
+        
+        classperf(cp,f,test_ind);
+    end
+    
+    acc(1,s) = cp.CorrectRate
+end
+
+%% train on first and classify on second
+users = 42;
+set = train(:,:,ismember(train_users,users));
+labels = labelstr(ismember(train_users,users),:);
+cp = classperf(labels);
+
+channels = [2 6 8:14 16 18 20];
+opt = struct('fs',fs,'visualize',0,'badchrm',0,'badtrrm',0,'spatialfilter','slap','detrend',...
+    1,'ch_pos',ch_pos(:,channels), 'freqband',frequency_band);
+
+train_set = set(channels,:,:);
+train_labels = labels;
+test_set = train(channels,:,ismember(train_users,32));
+test_labels = labelstr(ismember(train_users,32),:);
+
+[clsfr,res,~,~] = train_ersp_clsfr(train_set,train_labels,opt);
+[f,fraw,p,X] = apply_ersp_clsfr(test_set,clsfr);
+cp = classperf(test_labels);
+
+newSet = zeros(0,0,0); newLabelsa = zeros(0,0); newLabelsb = zeros(0,0); conf = zeros(0,0);
+for i=1:size(test_set,3)
+    newSet(:,:,i) = test_set(:,:,i);
+    cl = apply_ersp_clsfr(test_set(:,:,i),clsfr);
+    if (cl < 0)
+        cl = 2;
+    else
+        cl = 1;
+    end
+    newLabelsa(i) = cl;
+    conf(i) = i/45;
+    
+    if(size(newSet,3) < 3)
+        newLabelsb(i) = cl;
+    else
+        F = reshape(newSet(:,:,1:end-1),12*160,size(newSet,3)-1);
+        B = glmfit(F',newLabelsb'-1,'binomial','link','logit','weights',conf);
+        newLabelsb(i) = glmval(B,newSet(:,:,end),'logit');
+    end
+end
+
+% classperf(cp,f,1:size(test_labels,1))

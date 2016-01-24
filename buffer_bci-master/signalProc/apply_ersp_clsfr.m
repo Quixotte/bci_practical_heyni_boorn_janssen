@@ -39,11 +39,11 @@ if ( isfield(clsfr,'badchthresh') && ~isempty(clsfr.badchthresh) )
   X2=sqrt(max(0,tprod(X,[1 -2 -3],[],[1 -2 -3])./size(X,2)./size(X,3)));
   isbadch = X2 > clsfr.badchthresh;
   if ( verb>=0 && any(isbadch) ) 
-    fprintf('Bad channel >%5.3f:',clsfr.badchthresh); 
+%     fprintf('Bad channel >%5.3f:',clsfr.badchthresh); 
     for i=1:numel(X2); 
-      fprintf('%5.3f',X2(i)); if(isbadch(i))fprintf('*');else fprintf(' '); end; fprintf(' ');  
+%       fprintf('%5.3f',X2(i)); if(isbadch(i))fprintf('*');else fprintf(' '); end; fprintf(' ');  
     end
-    fprintf('\n');
+%     fprintf('\n');
   end;
   % replace this channel with the CAR of the rest... so spat-filt should
   % still work
@@ -95,7 +95,7 @@ if ( isfield(clsfr,'adaptspatialfilt') && ...
 	 [U,s]=eig(double(chCov)); s=diag(s); % N.B. force double to ensure precision with poor condition
 	 % select non-zero entries - cope with rank deficiency, numerical issues
 	 si = s>eps & ~isnan(s) & ~isinf(s) & abs(imag(s))<eps;
-	 fprintf('%g ',s(si));fprintf('\n');
+% 	 fprintf('%g ',s(si));fprintf('\n');
 	 W  = U(:,si)*diag(1./s(si))*U(:,si)'; % compute symetric whitener	 
 	 X  = tprod(X,[-1 2 3 4],W,[-1 1]); % apply it to the data
   end
@@ -107,11 +107,11 @@ if ( isfield(clsfr,'badtrthresh') && ~isempty(clsfr.badtrthresh) )
   X2 = sqrt(max(0,tprod(X,[-1 -2 1],[],[-1 -2 1])./size(X,1)./size(X,2)));
   isbadtr = X2 > clsfr.badtrthresh;
   if ( verb>=0 && any(isbadtr) ) 
-    fprintf('Bad tr >%5.3f:',clsfr.badtrthresh); 
+%     fprintf('Bad tr >%5.3f:',clsfr.badtrthresh); 
     for i=1:numel(X2); 
-      fprintf('%5.3f',X2(i)); if(isbadtr(i))fprintf('*');else fprintf(' '); end; fprintf(' ');  
+%       fprintf('%5.3f',X2(i)); if(isbadtr(i))fprintf('*');else fprintf(' '); end; fprintf(' ');  
     end
-    fprintf('\n'); 
+%     fprintf('\n'); 
   end;
 end
 
@@ -181,7 +181,7 @@ oclsfr=clsfr;
 clsfr=oclsfr;
 clsfr.adaptspatialfilt=exp(log(1/2)/10); % alpha = exp(log(.5)./(half-life))
 ei=1;
-fprintf('apply:');
+% fprintf('apply:');
 f=[];fa=[];
 for ei=1:size(X,3);
   f(ei) = apply_ersp_clsfr(X(:,:,ei),oclsfr);
