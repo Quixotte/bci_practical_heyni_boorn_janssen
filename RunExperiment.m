@@ -37,8 +37,8 @@ while (~endTest)
         windows{epoch,1} = data;
         epoch = epoch + 1;
         %Insert Hector Classification
-        C = 1;
-        C = num2str(C);
+        C = randi(2,1);
+        C = num2str(C(1));
         sendEvent('feedback',C);
     end
 end
