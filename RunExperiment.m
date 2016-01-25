@@ -39,9 +39,11 @@ while (~endTest)
         epoch = epoch + 1;
         
         %Insert Hector Classification
-        C = 1;
+        
+        C = randi(2,1);
         
         C = num2str(C);
+        
         windows(epoch,3) = C;
         sendEvent('feedback',C);
     end

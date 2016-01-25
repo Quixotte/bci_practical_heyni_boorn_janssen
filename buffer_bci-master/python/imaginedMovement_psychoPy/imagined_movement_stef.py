@@ -37,6 +37,7 @@ thisExp = data.ExperimentHandler(name=expName, version='',
     originPath=u'/Users/stefjanssen/Documents/programming/matlab/bci_practical/buffer_bci-master/python/imaginedMovement_psychoPy/simple_imagined_movement.psyexp',
     savePickle=True, saveWideText=True,
     dataFileName=filename)
+    
 #save a log file for detail verbose info
 logFile = logging.LogFile(filename+'.log', level=logging.EXP)
 logging.console.setLevel(logging.WARNING)  # this outputs to the screen, not a file
@@ -170,6 +171,16 @@ street_image = visual.ImageStim(win=win, name='street',
     flipHoriz=False, flipVert=False,
     texRes=128, interpolate=True, depth=0.0)
 
+steering = visual.Rect(win, width=0.5, height=0.1, lineWidth=1.5,
+lineColor='white', lineColorSpace='rgb', fillColor='white',
+fillColorSpace='rgb', vertices=((-0.5, 0), (0, 0.5), (0.5, 0)),
+closeShape=True, pos=(0, 0), size=1, ori=0.0)
+
+steering_box = visual.Rect(win, width=0.8, height=0.1, lineWidth=1.5,
+lineColor='white', lineColorSpace='rgb', fillColor=None,
+fillColorSpace='rgb', vertices=((-0.5, 0), (0, 0.5), (0.5, 0)),
+closeShape=True, pos=(0, 0.85), size=1, ori=0.0)
+
 # Create some handy timers
 globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.CountdownTimer()  # to track time remaining of each (non-slip) routine 
@@ -263,7 +274,7 @@ thisExp.nextEntry()
 routineTimer.reset()
 
 # set up handler to look after randomisation of conditions etc
-trials_2 = data.TrialHandler(nReps=1, method='random', 
+trials_2 = data.TrialHandler(nReps=5, method='random', 
     extraInfo=expInfo, originPath=u'/Users/stefjanssen/Documents/programming/matlab/bci_practical/buffer_bci-master/python/imaginedMovement_psychoPy/simple_imagined_movement.psyexp',
     trialList=data.importConditions('stimulus_conditions.csv'),
     seed=None, name='trials_2')
@@ -273,10 +284,14 @@ thisTrial_2 = trials_2.trialList[0]  # so we can initialise stimuli with some va
 if thisTrial_2 != None:
     for paramName in thisTrial_2.keys():
         exec(paramName + '= thisTrial_2.' + paramName)
-inc_car_pos = [1 if j <trials_2/2 else 2 for j in np.arange(trials_2)]
+inc_car_pos = [1 if j <10 else 2 for j in np.arange(20)] #create vector equal amount
 np.random.shuffle( inc_car_pos )
 print "inc car pos:"
 print inc_car_pos
+
+sendFeedbackCounter = 0
+getFeedbackCounter = 0
+
 for i, thisTrial_2 in enumerate(trials_2):
     currentLoop = trials_2
     # abbreviate parameter names if possible (e.g. rgb = thisTrial_2.rgb)
@@ -285,7 +300,7 @@ for i, thisTrial_2 in enumerate(trials_2):
             exec(paramName + '= thisTrial_2.' + paramName)
     #------Prepare to start Routine "shapeFeedback"-------
     t = 0
-    shapeFeedbackClock.reset()  # clock
+    shapeFeedbackClock.reset()  # clocks
     eventRequestClock.reset()
     frameN = -1
     this_routine_time = 12.0
@@ -293,21 +308,21 @@ for i, thisTrial_2 in enumerate(trials_2):
     # keep track of which components have finished
     shapeFeedbackComponents = []
     shapeFeedbackComponents.append(image)
+    shapeFeedbackComponents.append(inc_car_image)
+    shapeFeedbackComponents.append(street_image)
     for thisComponent in shapeFeedbackComponents:
         if hasattr(thisComponent, 'status'):
             thisComponent.status = NOT_STARTED
     
     #-------Start Routine "shapeFeedback"-------
-    sendFeedbackCounter = 0
-    getFeedbackCounter = 0
+
     continueRoutine = True
     routineTimer.add(this_routine_time)
-    last_feedback_req_time = this_routine_time
-    
+    feedbacks = []
     while continueRoutine and routineTimer.getTime() > 0:
         # get current time
         feedback_t = eventRequestClock.getTime()
-        if feedback_t > 0.1:    #send req for feedback every 100 ms
+        if feedback_t > 0.100:    #send req for feedback every 100 ms
             sendEvent("stimulus.epoch", str(inc_car_pos[i]))
             sendFeedbackCounter = 1 + sendFeedbackCounter
             eventRequestClock.reset()
@@ -315,14 +330,15 @@ for i, thisTrial_2 in enumerate(trials_2):
         frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
         # update/draw components on each frame
         
-        feedbackEvt = waitnewevents("feedback",1000)
+        feedbackEvt = waitnewevents("feedback",250)
         if feedbackEvt is None:
             feedback='None'
         else:
             feedback=feedbackEvt[0].value
-        
+            getFeedbackCounter = getFeedbackCounter + 1 
+        if feedback is not "None":
+            feedbacks.append(feedback)
         print feedback
-        getFeedbackCounter = getFeedbackCounter + 1 
         percent_there = 1-(routineTimer.getTime()/this_routine_time)
         if percent_there > 1:
             percent_there = 1
@@ -332,7 +348,7 @@ for i, thisTrial_2 in enumerate(trials_2):
         
         y = start_inc_pos_left[1] - diff_y
         
-        if inc_car_pos[i] == 0:
+        if inc_car_pos[i] == 1:
             x = start_inc_pos_left[0] - diff_x
         else:
             x = start_inc_pos_left[0]*-1 + diff_x
@@ -370,11 +386,43 @@ for i, thisTrial_2 in enumerate(trials_2):
         if image.status == STARTED and t >= (0.0 + (8.0-win.monitorFramePeriod*0.75)): #most of one frame period left
             image.setAutoDraw(False)
         
+        n_feedbacks = len(feedbacks)
+        if n_feedbacks == 0:
+            n_feedbacks = 1
+        percent_left = feedbacks.count('1')/n_feedbacks
+        print "percent_left:"
+        print percent_left
+        
         if image.status == STARTED: #only update if being drawn
-            if feedback == 'left':
+            if percent_left > 0.5:  #send car left
                 image.pos = end_car_pos_left
-            elif feedback == 'right':
+            elif percent_left < 0.5:#send car right
                 image.pos = [end_car_pos_left[0] * -1, end_car_pos_left[1]];
+                
+        # *steering* updates
+        if t >= 0.0 and steering.status == NOT_STARTED:
+            # keep track of start time/frame for later
+            steering.tStart = t  # underestimates by a little under one frame
+            steering.frameNStart = frameN  # exact frame index
+            steering.setAutoDraw(True)
+        if steering.status == STARTED and t >= (0.0 + (this_routine_time-win.monitorFramePeriod*0.75)): #most of one frame period left
+            steering.setAutoDraw(False)
+            
+        if steering.status == STARTED:  # only update if being drawn
+            steering.pos = [0.2-0.4*percent_left, 0.85]
+            
+        # *steering_box* updates
+        if t >= 0.0 and steering_box.status == NOT_STARTED:
+            # keep track of start time/frame for later
+            steering_box.tStart = t  # underestimates by a little under one frame
+            steering_box.frameNStart = frameN  # exact frame index
+            steering_box.setAutoDraw(True)
+        if steering_box.status == STARTED and t >= (0.0 + (this_routine_time-win.monitorFramePeriod*0.75)): #most of one frame period left
+            steering_box.setAutoDraw(False)
+            
+        if steering_box.status == STARTED:  # only update if being drawn
+            steering_box.pos = [0.0, 0.85]
+            
 
         # check if all components have finished
         if not continueRoutine:  # a component has requested a forced-end of Routine
@@ -402,6 +450,10 @@ for i, thisTrial_2 in enumerate(trials_2):
 # completed 1 repeats of 'trials_2'
 
 sendEvent("stimulus.sequences", "end")
+print "getFeedbackCounter:"
+print getFeedbackCounter
 
+print "sendFeedbackCounter"
+print sendFeedbackCounter
 win.close()
 core.quit()

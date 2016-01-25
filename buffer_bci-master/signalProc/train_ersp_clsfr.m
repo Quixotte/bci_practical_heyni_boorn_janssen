@@ -90,7 +90,7 @@ fs=opts.fs; if ( isempty(fs) ) warning('No sampling rate specified... assuming f
 %1) Detrend
 if ( opts.detrend )
   if ( isequal(opts.detrend,1) )
-    fprintf('1) Detrend\n');
+%     fprintf('1) Detrend\n');
     X=detrend(X,2); % detrend over time
   elseif ( isequal(opts.detrend,2) )
     fprintf('1) Center\n');
@@ -101,7 +101,7 @@ end
 %2) Bad channel identification & removal
 isbadch=[]; chthresh=[];
 if ( opts.badchrm || ~isempty(opts.badCh) )
-  fprintf('2) bad channel removal, ');
+%   fprintf('2) bad channel removal, ');
   isbadch = false(size(X,1),1);
   if ( ~isempty(ch_pos) ) isbadch(numel(ch_pos)+1:end)=true; end;
   if ( ~isempty(opts.badCh) )
@@ -118,7 +118,7 @@ if ( opts.badchrm || ~isempty(opts.badCh) )
     if ( ~isempty(ch_pos) ) ch_pos  =ch_pos(:,~isbadch(1:numel(ch_names))); end;
     ch_names=ch_names(~isbadch(1:numel(ch_names)));
   end
-  fprintf('%d ch removed\n',sum(isbadch));
+%   fprintf('%d ch removed\n',sum(isbadch));
 end
 
 %2.2) time range selection
@@ -136,20 +136,20 @@ if ( size(X,1)> 5 ) % only spatial filter if enough channels
   sftype=lower(opts.spatialfilter);
   switch ( sftype )
    case 'slap';
-    fprintf('3) Slap\n');
+%     fprintf('3) Slap\n');
     if ( ~isempty(ch_pos) )       
       R=sphericalSplineInterpolate(ch_pos,ch_pos,[],[],'slap');%pre-compute the SLAP filter we'll use
     else
       warning('Cant compute SLAP without channel positions!'); 
     end
    case 'car';
-    fprintf('3) CAR\n');
+%     fprintf('3) CAR\n');
     R=eye(size(X,1))-(1./size(X,1));
    case {'whiten','wht'};
-    fprintf('3) whiten\n');
+%     fprintf('3) whiten\n');
     R=whiten(X,1,1,0,0,1); % symetric whiten
    case {'csp','csp1','csp2','csp3'};
-    fprintf('3) csp\n');
+%     fprintf('3) csp\n');
     nf=str2num(sftype(end)); if ( isempty(nf) ) nf=3; end;
     [R,d]=csp(X,Y,3,nf); % 3 comp for each class CSP [oldCh x newCh x nClass]
     R=R(:,:)'; % [ newCh x oldCh ]
@@ -157,7 +157,7 @@ if ( size(X,1)> 5 ) % only spatial filter if enough channels
     % re-name channels
     ch_names={};for ci=1:size(d,1); for clsi=1:size(d,2); ch_names{ci,clsi}=sprintf('SF%d.%d',clsi,ci); end; end;
    case {'ssep','car-ssep','car+ssep','ssep1','ssep2','ssep3'};
-    fprintf('3) SSEP\n'); % est spatial filter using the SSEP approach
+%     fprintf('3) SSEP\n'); % est spatial filter using the SSEP approach
     nf=str2num(sftype(end)); if ( isempty(nf) ) nf=2; end;
     if ( iscell(opts.freqband) ) 
       periods = fs./[opts.freqband{:}];
@@ -186,15 +186,15 @@ end
 %3.5) Bad trial removal
 isbadtr=[]; trthresh=[];
 if ( opts.badtrrm ) 
-  fprintf('2.5) bad trial removal');
+%   fprintf('2.5) bad trial removal');
   [isbadtr,trstds,trthresh]=idOutliers(X,3,opts.badtrthresh);
   X=X(:,:,~isbadtr);
   Y=Y(~isbadtr,:);
-  fprintf(' %d tr removed\n',sum(isbadtr));
+%   fprintf(' %d tr removed\n',sum(isbadtr));
 end;
 
 %4) welch to convert to power spectral density
-fprintf('4) Welch\n');
+% fprintf('4) Welch\n');
 [X,wopts,winFn]=welchpsd(X,2,'width_ms',opts.width_ms,'windowType',opts.windowType,'fs',fs,...
                          'aveType',opts.aveType,'detrend',1); 
 freqs=0:(1000/opts.width_ms):fs/2; % position of the frequency bins
@@ -202,7 +202,7 @@ freqs=0:(1000/opts.width_ms):fs/2; % position of the frequency bins
 %5) sub-select the range of frequencies we care about
 fIdx=[];
 if ( ~isempty(opts.freqband) && size(X,2)>10 && ~isempty(fs) ) 
-  fprintf('5) Select frequencies\n');
+%   fprintf('5) Select frequencies\n');
   if ( isnumeric(opts.freqband) )
     if ( numel(opts.freqband)>2 ) % convert the diff band spects to upper/lower frequencies
       if ( numel(opts.freqband)==3 ) opts.freqband=opts.freqband([1 3]);
@@ -293,7 +293,7 @@ end
 
 %6) train classifier
 if ( opts.classify ) 
-  fprintf('6) train classifier\n');
+%   fprintf('6) train classifier\n');
   [clsfr, res]=cvtrainLinearClassifier(X,Y,[],opts.nFold,'zeroLab',opts.zeroLab,varargin{:});
 else
   clsfr=struct();
