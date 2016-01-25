@@ -65,7 +65,12 @@ text_3 = visual.TextStim(win=win, ori=0, name='text_3',
     pos=[0, 0], height=0.1, wrapWidth=80,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=0.0)
-# buffer_bci Handling the requered imports
+    
+text_4 = visual.TextStim(win=win, ori=0, name='text_4',
+    text=u'Pause',    font=u'Arial',
+    pos=[0, 0], height=0.1, wrapWidth=80,
+    color=u'white', colorSpace='rgb', opacity=1,
+    depth=0.0)# buffer_bci Handling the requered imports
 import sys
 import time
 sys.path.append("../../dataAcq/buffer/python/")
@@ -284,9 +289,8 @@ thisTrial_2 = trials_2.trialList[0]  # so we can initialise stimuli with some va
 if thisTrial_2 != None:
     for paramName in thisTrial_2.keys():
         exec(paramName + '= thisTrial_2.' + paramName)
-inc_car_pos = [1 if j <10 else 2 for j in np.arange(20)] #create vector equal amount
-np.random.shuffle( inc_car_pos )
-print "inc car pos:"
+inc_car_pos = [1 if j <10 else 2 for j in np.arange(20)]
+np.shuffle(inc_car_pos)
 print inc_car_pos
 
 sendFeedbackCounter = 0
@@ -352,7 +356,6 @@ for i, thisTrial_2 in enumerate(trials_2):
             x = start_inc_pos_left[0] - diff_x
         else:
             x = start_inc_pos_left[0]*-1 + diff_x
-        
 
         # *background_image* updates
         if t >= 0.0 and street_image.status == NOT_STARTED:
@@ -383,7 +386,7 @@ for i, thisTrial_2 in enumerate(trials_2):
             image.tStart = t  # underestimates by a little under one frame
             image.frameNStart = frameN  # exact frame index
             image.setAutoDraw(True)
-        if image.status == STARTED and t >= (0.0 + (8.0-win.monitorFramePeriod*0.75)): #most of one frame period left
+        if image.status == STARTED and t >= (0.0 + (this_routine_time-win.monitorFramePeriod*0.75)): #most of one frame period left
             image.setAutoDraw(False)
         
         n_feedbacks = len(feedbacks)
@@ -445,6 +448,23 @@ for i, thisTrial_2 in enumerate(trials_2):
     for thisComponent in shapeFeedbackComponents:
         if hasattr(thisComponent, "setAutoDraw"):
             thisComponent.setAutoDraw(False)
+    
+    sendEvent("stimulus.epoch","end")
+    
+    #-------Starting pause time ---------#
+    routineTimer.add(3.00)
+    while routineTimer.getTime() > 0:
+        # *text_4* updates
+        if t >= 0.0 and text_4.status == NOT_STARTED:
+            # keep track of start time/frame for later
+            text_4.tStart = t  # underestimates by a little under one frame
+            text_4.frameNStart = frameN  # exact frame index
+            text_4.setAutoDraw(True)
+        if text_4.status == STARTED and t >= (0.0 + (3600-win.monitorFramePeriod*0.75)): #most of one frame period left
+            text_4.setAutoDraw(False)
+            
+        if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
+            win.flip()
     thisExp.nextEntry()
     
 # completed 1 repeats of 'trials_2'
