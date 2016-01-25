@@ -40,9 +40,10 @@ while (~endTest)
           break;
         end;
         windows{epoch,1} = data;
+
         trial_tuple = strsplit(event.value,',');
-        windows(epoch,2) = trial_tuple(0);
-        windows(epoch,3) = trial_tuple(1);
+        windows{epoch,2} = trial_tuple(0);
+        windows{epoch,3} = trial_tuple(1);
         epoch = epoch + 1;
         
         %Insert Hector Classification
@@ -51,7 +52,8 @@ while (~endTest)
         
         C = num2str(C);
         
-        windows(epoch,4) = C;
+        windows{epoch,4} = C;
+
         sendEvent('feedback',C);
     end
 end
