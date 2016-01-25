@@ -22,7 +22,7 @@ trlen_samp = 2*phaseToRun.fsample; % #samples per epoch
 initgetwTime;
 initsleepSec;
 state = [];
-windows = cell(1000,1);
+windows = cell(10000,1);
 endTest = 0;
 epoch = 1;
 trialNumber = 1;
@@ -58,4 +58,5 @@ while (~endTest)
     end
 end
 
+windows = windows(1:epoch,:);
 save('Data.mat','windows');
