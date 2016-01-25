@@ -26,10 +26,10 @@ endTest = 0;
 epoch = 1;
 trialNumber = 1;
 while (~endTest)
-  [data,devents,state]=buffer_waitData([],[],state,'startSet',{'stimulus.epoch'},'trlen_samp',trlen_samp,'exitSet',{'data' {'stimulus.sequences' 'stimulus.epoch'} 'end'});
+  [data,devents,state]=buffer_waitData([],[],state,'startSet',{'stimulus.epoch'},'trlen_samp',trlen_samp,'exitSet',{'data' {'stimulus.sequences' 'stimulus.trial'} 'end'});
   for ei=1:numel(devents)
         event=devents(ei);
-        if( strcmp('stimulus.epoch',event.type) && strcmp('end',event.value) ) % end event 
+        if( strcmp('stimulus.trial',event.type) && strcmp('end',event.value) ) % end event 
           fprintf('Discarding all subsequent events: exit\n');
           break;
         end;
