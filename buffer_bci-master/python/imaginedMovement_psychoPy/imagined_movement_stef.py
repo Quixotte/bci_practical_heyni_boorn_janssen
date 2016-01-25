@@ -15,6 +15,7 @@ from numpy import sin, cos, tan, log, log10, pi, average, sqrt, std, deg2rad, ra
 from numpy.random import random, randint, normal, shuffle
 import os  # handy system and path functions
 import math
+import scipy.io as sio
 
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
@@ -289,8 +290,8 @@ thisTrial_2 = trials_2.trialList[0]  # so we can initialise stimuli with some va
 if thisTrial_2 != None:
     for paramName in thisTrial_2.keys():
         exec(paramName + '= thisTrial_2.' + paramName)
-inc_car_pos = [1 if j <10 else 2 for j in np.arange(60)]
-np.random.shuffle(inc_car_pos)
+
+inc_car_pos = sio.loadmat('pattern.mat')['pattern'][0]
 print inc_car_pos
 
 sendFeedbackCounter = 0

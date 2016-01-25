@@ -8,17 +8,22 @@ last = -(rand()>p_left); Nsame = 1;
 
 for i=1:L
     if(Nsame >= max_same)
-        pattern(1,i) = 1-last;
-        last = 1-last;
+        if (last == 2)
+            pattern(1,i) = 1;
+            last = 1;
+        else
+           pattern(1,i) = 2; 
+           last = 2
+        end
         Nsame = 1;
         continue;
     end
     
     p = rand();
     if (p <= p_left)
-        pattern(1,i) = 0;
-    else
         pattern(1,i) = 1;
+    else
+        pattern(1,i) = 2;
     end
     
     if(pattern(1,i) == last)
@@ -29,5 +34,6 @@ for i=1:L
     
     last = pattern(1,i);
 end
+save('pattern');
 
 end
