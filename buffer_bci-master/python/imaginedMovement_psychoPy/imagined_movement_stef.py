@@ -290,7 +290,7 @@ if thisTrial_2 != None:
     for paramName in thisTrial_2.keys():
         exec(paramName + '= thisTrial_2.' + paramName)
 inc_car_pos = [1 if j <10 else 2 for j in np.arange(20)]
-np.shuffle(inc_car_pos)
+np.random.shuffle(inc_car_pos)
 print inc_car_pos
 
 sendFeedbackCounter = 0
@@ -327,7 +327,7 @@ for i, thisTrial_2 in enumerate(trials_2):
         # get current time
         feedback_t = eventRequestClock.getTime()
         if feedback_t > 0.100:    #send req for feedback every 100 ms
-            sendEvent("stimulus.epoch", str(inc_car_pos[i]))
+            sendEvent("stimulus.epoch", str(inc_car_pos[i]) + "," + str(i))
             sendFeedbackCounter = 1 + sendFeedbackCounter
             eventRequestClock.reset()
         

@@ -39,7 +39,7 @@ while (~endTest)
           break;
         end;
         windows{epoch,1} = data;
-        windows(epoch,2) = event.value;
+        windows{epoch,2} = event.value;
         epoch = epoch + 1;
         
         %Insert Hector Classification
@@ -48,7 +48,7 @@ while (~endTest)
         
         C = num2str(C);
         
-        windows(epoch,3) = C;
+        windows{epoch,3} = C;
         sendEvent('feedback',C);
     end
 end
