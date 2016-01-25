@@ -4,7 +4,7 @@ C = size(D,1); %channel
 S = size(D,3); %trial
 
 Data = preproc_ersp(D,opt);
-Data = reshape(Data,[size(Data,1)*size(Data,2),S])';
+% Data = reshape(Data,[size(Data,1)*size(Data,2),S])';
 
 if (ppca)
     [coeff,~,latent,~,~,mu] = pca(Data);

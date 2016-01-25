@@ -22,6 +22,6 @@ state = [];
 endTest = false;
 
 while(true)
-    sendEvent('stimulus.epoch','start');
+    sendEvent('stimulus.epoch','2');
     pause(0.5);
 end
