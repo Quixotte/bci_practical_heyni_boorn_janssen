@@ -25,6 +25,7 @@ state = [];
 windows = cell(1000,1);
 endTest = 0;
 epoch = 1;
+trialNumber = 1;
 while (~endTest)
   [data,devents,state]=buffer_waitData([],[],state,'startSet',{'stimulus.epoch'},'trlen_samp',trlen_samp,'exitSet',{'data' {'stimulus.sequences' 'stimulus.epoch'} 'end'});
   for ei=1:numel(devents)
@@ -39,7 +40,10 @@ while (~endTest)
           break;
         end;
         windows{epoch,1} = data;
-        windows{epoch,2} = event.value;
+
+        trial_tuple = strsplit(event.value,',');
+        windows{epoch,2} = trial_tuple(0);
+        windows{epoch,3} = trial_tuple(1);
         epoch = epoch + 1;
         
         %Insert Hector Classification
@@ -48,7 +52,8 @@ while (~endTest)
         
         C = num2str(C);
         
-        windows{epoch,3} = C;
+        windows{epoch,4} = C;
+
         sendEvent('feedback',C);
     end
 end
