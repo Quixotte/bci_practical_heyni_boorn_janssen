@@ -16,7 +16,6 @@ while ( isempty(phaseToRun) || ~isstruct(phaseToRun) || (phaseToRun.nchans==0) )
 end;
 
 trlen_samp = 2*phaseToRun.fsample; % #samples per epoch
-
 % set the real-time-clock to use
 
 initgetwTime;
@@ -42,9 +41,8 @@ while (~endTest)
         windows{epoch,1} = data;
 
         trial_tuple = strsplit(event.value,',');
-        windows{epoch,2} = trial_tuple(0);
-        windows{epoch,3} = trial_tuple(1);
-        epoch = epoch + 1;
+        windows{epoch,2} = trial_tuple(1);
+        windows{epoch,3} = trial_tuple(2);
         
         %Insert Hector Classification
         
@@ -53,8 +51,10 @@ while (~endTest)
         C = num2str(C);
         
         windows{epoch,4} = C;
-
+    
         sendEvent('feedback',C);
+        epoch = epoch + 1;
+
     end
 end
 

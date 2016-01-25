@@ -279,7 +279,7 @@ thisExp.nextEntry()
 routineTimer.reset()
 
 # set up handler to look after randomisation of conditions etc
-trials_2 = data.TrialHandler(nReps=5, method='random', 
+trials_2 = data.TrialHandler(nReps=30, method='random', 
     extraInfo=expInfo, originPath=u'/Users/stefjanssen/Documents/programming/matlab/bci_practical/buffer_bci-master/python/imaginedMovement_psychoPy/simple_imagined_movement.psyexp',
     trialList=data.importConditions('stimulus_conditions.csv'),
     seed=None, name='trials_2')
@@ -289,7 +289,7 @@ thisTrial_2 = trials_2.trialList[0]  # so we can initialise stimuli with some va
 if thisTrial_2 != None:
     for paramName in thisTrial_2.keys():
         exec(paramName + '= thisTrial_2.' + paramName)
-inc_car_pos = [1 if j <10 else 2 for j in np.arange(20)]
+inc_car_pos = [1 if j <10 else 2 for j in np.arange(60)]
 np.random.shuffle(inc_car_pos)
 print inc_car_pos
 
@@ -391,10 +391,18 @@ for i, thisTrial_2 in enumerate(trials_2):
         
         n_feedbacks = len(feedbacks)
         if n_feedbacks == 0:
-            n_feedbacks = 1
-        percent_left = feedbacks.count('1')/n_feedbacks
-        print "percent_left:"
-        print percent_left
+            percent_left = 0
+        else:
+            weighted_list = np.arange(1, n_feedbacks+1)
+            weighted_list = weighted_list/sum(weighted_list)
+            print weighted_list
+            percent_left = sum(
+                [(1 if feedbacks[j]== '1' else 0) * weighted_list[j] 
+                for j in np.arange(n_feedbacks)]
+            )
+            percent_left = feedbacks.count('1')/n_feedbacks
+            print "percent_left:"
+            print percent_left
         
         if image.status == STARTED: #only update if being drawn
             if percent_left > 0.5:  #send car left
