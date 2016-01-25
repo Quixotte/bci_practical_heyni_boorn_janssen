@@ -11,3 +11,6 @@ T2: right fist
 
 Data can be downloaded from:
 https://drive.google.com/folderview?id=0B4vuyuswipHQelB4dE80aWt2OGM&usp=sharing
+
+Data collected in the following format:
+Data, incomming_car_position, trial_id, classified as
