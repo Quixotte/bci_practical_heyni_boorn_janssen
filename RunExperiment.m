@@ -1,5 +1,6 @@
 try; cd(fileparts(mfilename('fullpath')));catch; end;
-run buffer_bci-master/utilities/initPaths.m
+run buffer_bci-master/utilities/initPaths.m;
+load('classifier_Hector.mat');
 
 buffhost='localhost';
 buffport=1972;
@@ -46,7 +47,7 @@ while (~endTest)
         
         %Insert Hector Classification
         
-        C = randi(2,1);
+        C = classifyEpoch(data,clsfr);
         
         C = num2str(C);
         
@@ -59,4 +60,4 @@ while (~endTest)
 end
 
 windows = windows(1:epoch,:);
-save('Data.mat','windows');
+save('Data_Thomas_TRAIN.mat','windows');
