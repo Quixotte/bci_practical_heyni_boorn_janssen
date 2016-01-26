@@ -1,10 +1,12 @@
 clear all; close all; clc;
-load('Hector_data.mat');
+load('Data_Thomas_TRAIN.mat');
 %%
 trials = cellfun(@(c) str2double(c),windows(:,3));
 remain = windows(trials<50,:);
 remain(:,3) = num2cell(trials(trials<50));
+% remain(:,4) = num2cell(trials(trials<50));
 remain(:,2) = num2cell(cellfun(@(c) str2double(c),remain(:,2)));
+remain(:,4) = num2cell(cellfun(@(c) str2double(c),remain(:,4)));
 
 l = cell2mat(remain(:,2));
 sessions = cell2mat(remain(:,3));

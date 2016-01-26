@@ -84,9 +84,7 @@ end
 figure; hold on;
 bar([cross_val(:,1),between(:,1)]);
 plot(0:4,0.5*ones(5,1),'r');
-legend('10-fold within subject cross validation','Between subject validation','Chance level');
-ylim([0 1]); xlim([0.5 3.5]);
-ylabel('Classification rate');
+legend('10-fold within subject cross validation','Between subject validation');
 set(gca,'XTick',[1:3]);
 set(gca,'XTickLabel',names);
 % subplot(2,1,1);
