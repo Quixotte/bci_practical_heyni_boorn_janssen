@@ -279,7 +279,7 @@ thisExp.nextEntry()
 # the Routine "Instructions" was not non-slip safe, so reset the non-slip timer
 routineTimer.reset()
 
-n_reps = 5
+n_reps = 30
 # set up handler to look after randomisation of conditions etc
 trials_2 = data.TrialHandler(nReps=n_reps, method='random', 
     extraInfo=expInfo, originPath=u'/Users/stefjanssen/Documents/programming/matlab/bci_practical/buffer_bci-master/python/imaginedMovement_psychoPy/simple_imagined_movement.psyexp',
