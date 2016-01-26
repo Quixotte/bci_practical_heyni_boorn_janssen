@@ -279,8 +279,9 @@ thisExp.nextEntry()
 # the Routine "Instructions" was not non-slip safe, so reset the non-slip timer
 routineTimer.reset()
 
+n_reps = 30
 # set up handler to look after randomisation of conditions etc
-trials_2 = data.TrialHandler(nReps=30, method='random', 
+trials_2 = data.TrialHandler(nReps=n_reps, method='random', 
     extraInfo=expInfo, originPath=u'/Users/stefjanssen/Documents/programming/matlab/bci_practical/buffer_bci-master/python/imaginedMovement_psychoPy/simple_imagined_movement.psyexp',
     trialList=data.importConditions('stimulus_conditions.csv'),
     seed=None, name='trials_2')
@@ -458,12 +459,18 @@ for i, thisTrial_2 in enumerate(trials_2):
         if hasattr(thisComponent, "setAutoDraw"):
             thisComponent.setAutoDraw(False)
     
-    sendEvent("stimulus.epoch","end")
+    sendEvent("stimulus.trial","end")
     
     #-------Starting pause time ---------#
-    routineTimer.add(3.00)
+    if i is not n_reps:
+        routineTimer.add(3.00)
+    else:
+        routineTimer.add(30.0)
+        
     while routineTimer.getTime() > 0:
         # *text_4* updates
+        if i is n_reps:
+            text_4.text = "Longer Pause\n       " + str(int(routineTimer.getTime()))
         if t >= 0.0 and text_4.status == NOT_STARTED:
             # keep track of start time/frame for later
             text_4.tStart = t  # underestimates by a little under one frame
@@ -474,6 +481,8 @@ for i, thisTrial_2 in enumerate(trials_2):
             
         if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
             win.flip()
+    if i is n_reps:
+        text_4.text = "Pause"
     thisExp.nextEntry()
     
 # completed 1 repeats of 'trials_2'
