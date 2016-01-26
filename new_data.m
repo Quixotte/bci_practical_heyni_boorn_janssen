@@ -14,7 +14,7 @@ labelstr = zeros(0,0);
 index=1;
 for trial=1:49
     d = remain(sessions==trial,:);
-    for i=1:1:40
+    for i=6:2:40
         c = d{i,1}.buf;
         train(:,:,index) = c(1:21,:); %only first 21 channels
         labelstr(index,:) = d{i,2};
@@ -49,5 +49,17 @@ for k=1:K
     
     classperf(cp1,f,test_ind)
 end
+
+%%
+lm = reshape(train,size(train,1)*size(train,2),size(train,3));
+endin = round(size(lm,2)*0.9);
+
+trglm = lm(:,1:endin); trlabels = labelstr(1:endin)-1;
+tesy = labelstr(endin+1:end);
+B = glmfit(trglm',trlabels,'binomial');
+
+cp = classperf(trlabels);
+glmy = glmval(B,trglm','logit');
+classperf(cp,round(glmy))
 %%
 save('dataset/hector_data_done.mat','train','labelstr');
