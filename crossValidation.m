@@ -81,7 +81,7 @@ end
 %%
 figure; hold on;
 bar([cross_val(:,1),between(:,1)]); ylim([0 1]);
-legend('10-fold within subject cross validation','Between subject cross validation');
+legend('10-fold within subject cross validation','Between subject validation');
 set(gca,'XTick',[1:3]);
 set(gca,'XTickLabel',names);
 % subplot(2,1,1);
@@ -100,6 +100,6 @@ c1 = mean(X(:,:,LABELS(:,1)==1),3);
 c2 = mean(X(:,:,LABELS(:,1)==2),3);
 for i=1:21
     subplot(3,7,i); hold on;
-    plot(clsfr.freqIdx,c1(i,:)); plot(clsfr.freqIdx,c2(i,:));
+    plot(clsfr.freqIdx,c1(i,:)); plot(clsfr.freqIdx,c2(i,:)); legend('l','r');
     title(channel_names(i,:));
 end
