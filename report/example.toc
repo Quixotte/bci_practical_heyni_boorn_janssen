@@ -2,6 +2,6 @@
 \select@language {british}
 \beamer@sectionintoc {1}{Project}{3}{0}{1}
 \beamer@sectionintoc {2}{Classification scheme}{5}{0}{2}
-\beamer@sectionintoc {3}{Experiment pipeline}{10}{0}{3}
-\beamer@sectionintoc {4}{Results}{11}{0}{4}
-\beamer@sectionintoc {5}{Discussion}{12}{0}{5}
+\beamer@sectionintoc {3}{Experimental setup}{10}{0}{3}
+\beamer@sectionintoc {4}{Results}{12}{0}{4}
+\beamer@sectionintoc {5}{Discussion}{15}{0}{5}
