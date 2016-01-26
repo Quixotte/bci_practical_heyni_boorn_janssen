@@ -30,7 +30,7 @@ ch_pos = cellstr(channel_names);
         1, 'freqband',[6 8 26 28],'ch_pos',{ch_pos},'capFile','this_cap_best_cap.txt');
 
 [clsfr,~,~,~] = train_ersp_clsfr(train,labelstr,opt);
-save('classifier_Thomas.mat','clsfr','opt');
+save('classifier_Hector.mat','clsfr','opt');
 %% test on set
 N = size(train,3);
 K = 10;
