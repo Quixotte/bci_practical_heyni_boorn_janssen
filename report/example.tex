@@ -54,11 +54,11 @@
   \frametitle{Foreseen challenges}
 
   \begin{itemize}
-    \item Covariate shift, Bickel et al. 2009
-    \item BCI-performance in general
+    \item Covariate shift (Bickel et al., 2009)
+    \item BCI-performance in general (actual movement (Blokland et al., under review))
     \item Generalisability between subjects
+    \item Within-subject variation
     \item Online classification
-    \item Within subject variation
   \end{itemize}
 \end{frame}
 
@@ -80,13 +80,16 @@
   \begin{itemize}
     \item Preprocessing 
 	\begin{itemize}
-		\item wop
-		\item wopwop
+		\item Channel selection
+		\item Channel/trial removal
+		\item Spatial filter
+		\item Detrending
+		\item Windowing
 	\end{itemize}
     \item Feature Extraction
 	\begin{itemize}
-		\item wop
-		\item wopwop
+		\item Welch's method
+		\item $\mu$ and $\beta$ frequencies
 	\end{itemize}
   \end{itemize}
 
@@ -95,25 +98,29 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Prediction}
+  \frametitle{Classification}
 
   \begin{itemize}
-    \item List all attempted classifiers
-    \item Performance?
+    \item KMeans
+    \item Multivariate Gaussian EM
+    \item PCA
+    \item Logistic Regression
   \end{itemize}
+  Performance?
 \end{frame}
 
 \begin{frame}
-  \frametitle{Prediction}
-
+  \frametitle{Classification}
   \begin{itemize}
-    \item List all attempted classifiers
-    \item Performance?
+    \item KMeans     
+    \item Multivariate Gaussian EM
+    \item PCA
+    \item Logistic Regression
   \end{itemize}
-
-  \begin{figure}[H]
+  \begin{figure}
     \includegraphics[width=0.3\textwidth, right]{chucktesta.jpeg}
   \end{figure}
+  Classification at chance level $\rightarrow$ plan B: ERSP classifier with adaptive LR.
 
 \end{frame}
 
