@@ -1,0 +1,6 @@
+\beamer@endinputifotherversion {3.33pt}
+\select@language {british}
+\beamer@sectionintoc {1}{Project goal}{3}{0}{1}
+\beamer@sectionintoc {2}{State of Art}{4}{0}{2}
+\beamer@sectionintoc {3}{Human and Robot roles in task}{5}{0}{3}
+\beamer@sectionintoc {4}{Current status}{6}{0}{4}
