@@ -7,3 +7,99 @@ load('data_stef_train.mat');
 
 load('data_thomas_train.mat');
 [setThomas,labelsThomas] = getSet(windows);
+
+%%
+SET = cat(4,setHector,setStef,setThomas);
+LABELS = cat(2,labelsHector,labelsStef,labelsThomas);
+names = {'Héctor','Stêf','Thomás'};
+
+channel_names = ['FC5';'FC3';'FC1';'FCz';'FC2';'FC4';'FC6';...
+    'C6 ';'C4 ';'C2 ';'Cz ';'C1 ';'C3 ';'C5 ';...
+    'CP5';'CP3';'CP1';'CPz';'CP2';'CP4';'CP6'];
+ch_pos = cellstr(channel_names);
+opt = struct('fs',256,'visualize',0,'badchrm',0,'badtrrm',0,'spatialfilter','slap','detrend',...
+    1, 'freqband',[6 8 26 28],'ch_pos',{ch_pos},'capFile','this_cap_best_cap.txt');
+
+%% 10-fold cross validation
+cross_val = zeros(3,3);
+
+for u=1:3
+    train = SET(:,:,:,u); labelstr = LABELS(:,u);
+    N = size(train,3);
+    K = 10;
+    IND = crossvalind('Kfold', N, K); %train on 90% test on the rest
+    cp = classperf(labelstr);
+    for k=1:K
+        test_ind = (IND == k); train_ind = ~test_ind;
+        
+        train_set = train(:,:,train_ind); train_labels = labelstr(train_ind,:);
+        test_set = train(:,:,test_ind); test_labels = labelstr(test_ind,:);
+        
+        [clsfr,res,~,~] = train_ersp_clsfr(train_set,train_labels,opt);
+        [f,fraw,p,X] = apply_ersp_clsfr(test_set,clsfr);
+        
+        for i=1:size(clsfr.spMx,2)
+            if (clsfr.spMx(i) == -1)
+                f(f < 0,:) = clsfr.spKey(i);
+            elseif (clsfr.spMx(i) == 1)
+                f(f >= 0,:) = clsfr.spKey(i);
+            else
+                'error!'
+            end
+        end
+        classperf(cp,f,test_ind);
+    end
+    cross_val(u,1) = cp.CorrectRate;
+    cross_val(u,2) = cp.Sensitivity;
+    cross_val(u,3) = cp.Specificity;
+end
+%% between subject validation
+between = zeros(3,3);
+a=[1,2,3];
+for u=1:3
+    train = SET(:,:,:,a==u); labelstr = LABELS(:,a==u);
+    test = SET(:,:,:,a~=u); labelste = LABELS(:,a~=u);
+    cp = classperf(labelste);
+        
+    [clsfr,res,~,~] = train_ersp_clsfr(train_set,train_labels,opt);
+    [f,fraw,p,X] = apply_ersp_clsfr(test,clsfr);
+    
+    for i=1:size(clsfr.spMx,2)
+        if (clsfr.spMx(i) == -1)
+            f(f < 0,:) = clsfr.spKey(i);
+        elseif (clsfr.spMx(i) == 1)
+            f(f >= 0,:) = clsfr.spKey(i);
+        else
+            'error!'
+        end
+    end
+    classperf(cp,f);
+    between(u,1) = cp.CorrectRate;
+    between(u,2) = cp.Sensitivity;
+    between(u,3) = cp.Specificity;
+end
+%%
+figure; hold on;
+bar([cross_val(:,1),between(:,1)]); ylim([0 1]);
+legend('10-fold within subject cross validation','Between subject cross validation');
+set(gca,'XTick',[1:3]);
+set(gca,'XTickLabel',names);
+% subplot(2,1,1);
+% bar(cross_val'); ylim([0 1]);
+% set(gca,'XTickLabel',names);
+% title('10-fold cross validation within subject');
+% 
+% subplot(2,1,2);
+% bar(between'); ylim([0 1]);
+% title('Between subject validation');
+% set(gca,'XTickLabel',names);
+
+%%
+figure;
+c1 = mean(X(:,:,LABELS(:,1)==1),3);
+c2 = mean(X(:,:,LABELS(:,1)==2),3);
+for i=1:21
+    subplot(3,7,i); hold on;
+    plot(clsfr.freqIdx,c1(i,:)); plot(clsfr.freqIdx,c2(i,:));
+    title(channel_names(i,:));
+end
