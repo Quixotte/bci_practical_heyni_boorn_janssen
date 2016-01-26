@@ -62,7 +62,7 @@ for u=1:3
     train = SET(:,:,:,a~=u); labelstr = LABELS(:,a~=u);
     test = SET(:,:,:,a==u); labelste = LABELS(:,a==u);
     cp = classperf(labelste);
-        
+    
     [clsfr,res,~,~] = train_ersp_clsfr(train(:,:,:),labelstr(:),opt);
     [f,fraw,p,X] = apply_ersp_clsfr(test,clsfr);
     
@@ -82,9 +82,9 @@ for u=1:3
 end
 %%
 figure; hold on;
-bar([cross_val(:,1),between(:,1)]);
+bar([cross_val(:,1),between(:,1),[497/900,533/900,542/900]']);
 plot(0:4,0.5*ones(5,1),'r');
-legend('10-fold within subject cross validation','Between subject validation','Chance level');
+legend('10-fold within subject cross validation','Between subject validation','Adaptive classification','Chance level');
 ylim([0 1]); xlim([0.5 3.5]);
 ylabel('Classification rate');
 set(gca,'XTick',[1:3]);
@@ -93,7 +93,7 @@ set(gca,'XTickLabel',names);
 % bar(cross_val'); ylim([0 1]);
 % set(gca,'XTickLabel',names);
 % title('10-fold cross validation within subject');
-% 
+%
 % subplot(2,1,2);
 % bar(between'); ylim([0 1]);
 % title('Between subject validation');
@@ -108,3 +108,51 @@ for i=1:21
     plot(clsfr.freqIdx,c1(i,:)); plot(clsfr.freqIdx,c2(i,:)); legend('l','r');
     title(channel_names(i,:));
 end
+
+%% check if thomas' classification can be improved
+u = 2;
+train = SET(:,:,:,a~=u); labelstr = LABELS(:,a~=u);
+test = SET(:,:,:,a==u); labelste = LABELS(:,a==u);
+cp = classperf(labelste);
+
+[clsfr,res,~,~] = train_ersp_clsfr(train(:,:,:),labelstr(:),opt);
+save('classifier.mat','clsfr');
+improvements = {497/900,533/900,542/900};
+%% plain is 0.5989
+% [f,fraw,p,X] = apply_ersp_clsfr(test,clsfr);
+% for i=1:size(clsfr.spMx,2)
+%     if (clsfr.spMx(i) == -1)
+%         f(f < 0,:) = clsfr.spKey(i);
+%     elseif (clsfr.spMx(i) == 1)
+%         f(f >= 0,:) = clsfr.spKey(i);
+%     else
+%         'error!'
+%     end
+% end
+getClass = @(s) apply_ersp_clsfr(s,clsfr);
+linclasses = zeros(0,0);
+classified = zeros(0,0);
+glmset = zeros(0,0); weights = zeros(0,0);
+default = 0.5989;
+S = 900;
+for i=1:S%size(train,3)
+    sample = test(:,:,i);
+    s2 = preproc_ersp(sample,opt);
+    c = getClass(sample);
+    if (c < 0) c = 2; else c=1; end;
+    linclasses(i) = c;
+    
+    if (i<10)
+        classified(i,:)=c;
+        weights(i,:) = default;
+        glmset(i,:) = s2(:);
+    else
+        B = glmfit(glmset,(classified-1),'binomial','weights',weights);
+        self = glmval(B,s2(:)','logit')+1;
+        w = i/S * 1.3;
+        weights(i,:) = (w+default)/2;
+        classified(i,:) = round((self*w+c*default)/(w+default));
+        glmset(i,:) = s2(:);
+    end
+end
+sum(classified==labelste(1:S))
