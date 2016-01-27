@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.9.14)  26 JAN 2016 17:31
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.9.14)  27 JAN 2016 13:10
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1012,113 +1012,108 @@ LaTeX Font Warning: Font shape `OT1/cmss/m/n' in size <4> not available
 
 [1{/usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
- <./ru_background.pdf> <./ru_logo.pdf>] (./example.toc) [2
-
- <./ru_logo.pdf>]
-<cybathlon_challenge.png, id=89, 853.1875pt x 619.31375pt>
+ <./ru_background.pdf> <./ru_logo.pdf>]
+<cybathlon_challenge.png, id=69, 853.1875pt x 619.31375pt>
 File: cybathlon_challenge.png Graphic file (type png)
 
 <use cybathlon_challenge.png>
-Package pdftex.def Info: cybathlon_challenge.png used on input line 51.
+Package pdftex.def Info: cybathlon_challenge.png used on input line 46.
 (pdftex.def)             Requested size: 153.64493pt x 111.52837pt.
- [3
+ [2
 
  <./ru_logo.pdf> <./cybathlon_challenge.png>]
-LaTeX Font Info:    Try loading font information for OMS+cmss on input line 63.
+LaTeX Font Info:    Try loading font information for OMS+cmss on input line 60.
 
-LaTeX Font Info:    No file OMScmss.fd. on input line 63.
+LaTeX Font Info:    No file OMScmss.fd. on input line 60.
 
 
 LaTeX Font Warning: Font shape `OMS/cmss/m/n' undefined
 (Font)              using `OMS/cmsy/m/n' instead
-(Font)              for symbol `textbullet' on input line 63.
+(Font)              for symbol `textbullet' on input line 60.
 
-[4
+[3
 
- <./ru_logo.pdf>] <bci_cycle.png, id=114, 335.2525pt x 271.0125pt>
+ <./ru_logo.pdf>] <bci_cycle.png, id=97, 335.2525pt x 271.0125pt>
 File: bci_cycle.png Graphic file (type png)
 
 <use bci_cycle.png>
-Package pdftex.def Info: bci_cycle.png used on input line 75.
+Package pdftex.def Info: bci_cycle.png used on input line 71.
 (pdftex.def)             Requested size: 215.10196pt x 173.8816pt.
- [5
+ [4
 
- <./ru_logo.pdf> <./bci_cycle.png>] [6
+ <./ru_logo.pdf> <./bci_cycle.png>]
+LaTeX Font Info:    Try loading font information for U+msa on input line 105.
 
- <./ru_logo.pdf>]
-[7
-
- <./ru_logo.pdf>] <chucktesta.jpeg, id=152, 639.38875pt x 359.3425pt>
-File: chucktesta.jpeg Graphic file (type jpg)
-
-<use chucktesta.jpeg>
-Package pdftex.def Info: chucktesta.jpeg used on input line 118.
-(pdftex.def)             Requested size: 92.1879pt x 51.80997pt.
- [8
-
- <./ru_logo.pdf> <./chucktesta.jpeg>]
-<brain_racer.png, id=166, 635.37375pt x 472.76625pt>
-File: brain_racer.png Graphic file (type png)
- <use brain_racer.png>
-Package pdftex.def Info: brain_racer.png used on input line 127.
-(pdftex.def)             Requested size: 215.10196pt x 160.05309pt.
-
-[9
-
- <./ru_logo.pdf> <./brain_racer.png>]
-<brain_racer_pipeline.png, id=179, 863.225pt x 446.66875pt>
-File: brain_racer_pipeline.png Graphic file (type png)
-
-<use brain_racer_pipeline.png>
-Package pdftex.def Info: brain_racer_pipeline.png used on input line 138.
-(pdftex.def)             Requested size: 276.559pt x 143.10048pt.
- [10
-
- <./ru_logo.pdf> <./brain_racer_pipeline.png>] <cap.png, id=193, 468.75125pt x 
-407.5225pt>
-File: cap.png Graphic file (type png)
- <use cap.png>
-Package pdftex.def Info: cap.png used on input line 149.
-(pdftex.def)             Requested size: 215.10196pt x 187.00247pt.
- [11
-
- <./ru_logo.pdf> <./cap.png>]
-LaTeX Font Info:    Try loading font information for U+msa on input line 163.
- (/usr/local/texlive/2014/texmf-dist/tex/latex/amsfonts/umsa.fd
+(/usr/local/texlive/2014/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 163.
+LaTeX Font Info:    Try loading font information for U+msb on input line 105.
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Try loading font information for OT1+mathkerncmss on input 
-line 163.
+line 105.
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/sansmathaccent/ot1mathkerncmss.fd
 File: ot1mathkerncmss.fd 2013/03/27 Fontinst v1.933 font definitions for OT1/ma
 thkerncmss.
-) [12
+) <cap.png, id=109, 468.75125pt x 407.5225pt>
+File: cap.png Graphic file (type png)
+ <use cap.png>
+Package pdftex.def Info: cap.png used on input line 105.
+(pdftex.def)             Requested size: 122.9164pt x 106.855pt.
+ [5
 
- <./ru_logo.pdf>] <distinction.png, id=217, 1445.4pt x 704.6325pt>
+ <./ru_logo.pdf> <./cap.png>] [6
+
+ <./ru_logo.pdf>]
+<chucktesta.jpeg, id=135, 639.38875pt x 359.3425pt>
+File: chucktesta.jpeg Graphic file (type jpg)
+ <use chucktesta.jpeg>
+Package pdftex.def Info: chucktesta.jpeg used on input line 142.
+(pdftex.def)             Requested size: 122.9164pt x 69.07631pt.
+
+[7
+
+ <./ru_logo.pdf> <./chucktesta.jpeg>]
+<brain_racer.png, id=149, 635.37375pt x 472.76625pt>
+File: brain_racer.png Graphic file (type png)
+ <use brain_racer.png>
+Package pdftex.def Info: brain_racer.png used on input line 151.
+(pdftex.def)             Requested size: 215.10196pt x 160.05309pt.
+
+[8
+
+ <./ru_logo.pdf> <./brain_racer.png>]
+<brain_racer_pipeline.png, id=162, 863.225pt x 446.66875pt>
+File: brain_racer_pipeline.png Graphic file (type png)
+
+<use brain_racer_pipeline.png>
+Package pdftex.def Info: brain_racer_pipeline.png used on input line 162.
+(pdftex.def)             Requested size: 276.559pt x 143.10048pt.
+ [9
+
+ <./ru_logo.pdf> <./brain_racer_pipeline.png>] <distinction.png, id=177, 1445.4
+pt x 704.6325pt>
 File: distinction.png Graphic file (type png)
-
-<use distinction.png>
-Package pdftex.def Info: distinction.png used on input line 173.
+ <use distinction.png>
+Package pdftex.def Info: distinction.png used on input line 174.
 (pdftex.def)             Requested size: 307.28987pt x 149.805pt.
- [13
 
- <./ru_logo.pdf> <./distinction.png (PNG copy)>]
-<bars.png, id=231, 526.96875pt x 395.22656pt>
+[10
+
+ <./ru_logo.pdf> <./distinction.png (PNG copy)>] [11
+
+ <./ru_logo.pdf>]
+<bars.png, id=201, 421.575pt x 316.18124pt>
 File: bars.png Graphic file (type png)
  <use bars.png>
-Package pdftex.def Info: bars.png used on input line 183.
-(pdftex.def)             Requested size: 215.10196pt x 161.32628pt.
- [14
+Package pdftex.def Info: bars.png used on input line 194.
+(pdftex.def)             Requested size: 215.10196pt x 161.32748pt.
+ [12
 
- <./ru_logo.pdf> <./bars.png (PNG copy)>] [15
-
- <./ru_logo.pdf>] [16
+ <./ru_logo.pdf> <./bars.png (PNG copy)>] [13
 
  <./ru_logo.pdf>]
 \tf@nav=\write6
@@ -1130,14 +1125,13 @@ Package pdftex.def Info: bars.png used on input line 183.
 \tf@snm=\write8
 \openout8 = `example.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 203.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 203.
-
-(./example.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 203.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 203.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 206.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 206.
+ (./example.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 206.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 206.
 Package rerunfilecheck Info: File `example.out' has not changed.
-(rerunfilecheck)             Checksum: 2668ADAF70954DA77338C6DDDD11F040;238.
+(rerunfilecheck)             Checksum: 6C05B969E5025D736752D689EB84FC0A;236.
 
 
 LaTeX Font Warning: Size substitutions with differences
@@ -1146,25 +1140,26 @@ LaTeX Font Warning: Size substitutions with differences
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 203.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 206.
  ) 
 Here is how much of TeX's memory you used:
- 18106 strings out of 493117
- 344242 string characters out of 6135433
- 424252 words of memory out of 5000000
- 21061 multiletter control sequences out of 15000+600000
- 11844 words of font info for 43 fonts, out of 8000000 for 9000
+ 18096 strings out of 493117
+ 344025 string characters out of 6135433
+ 425252 words of memory out of 5000000
+ 21057 multiletter control sequences out of 15000+600000
+ 15033 words of font info for 55 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 56i,19n,55p,387b,618s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb
-></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb>
-</usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></
-usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></u
-sr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb>
-Output written on example.pdf (16 pages, 3365045 bytes).
+ 56i,19n,55p,387b,755s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb
+></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb>
+</usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb><
+/usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></u
+sr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></us
+r/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb>
+Output written on example.pdf (13 pages, 3347268 bytes).
 PDF statistics:
- 297 PDF objects out of 1000 (max. 8388607)
- 229 compressed objects within 3 object streams
- 38 named destinations out of 1000 (max. 500000)
- 225 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 256 PDF objects out of 1000 (max. 8388607)
+ 194 compressed objects within 2 object streams
+ 32 named destinations out of 1000 (max. 500000)
+ 210 words of extra memory for PDF output out of 10000 (max. 10000000)
 

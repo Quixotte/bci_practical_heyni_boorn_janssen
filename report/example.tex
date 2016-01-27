@@ -24,10 +24,6 @@
   \titlepage
 \end{frame}
 
-\begin{frame}
-  \frametitle{Outline}
-  \tableofcontents
-\end{frame}
 
 % Section titles are shown in at the top of the slides with the current section 
 % highlighted. Note that the number of sections determines the size of the top 
@@ -40,7 +36,6 @@
   \frametitle{Problem Description}
 
   Cybathlon: robust zero training classifier
-
 
   \begin{figure}
    
@@ -55,13 +50,14 @@
 
   \begin{itemize}
     \item Covariate shift (Bickel et al., 2009)
-    \item BCI-performance in general (actual movement (Blokland et al., under review))
-    \item Generalisability between subjects
-    \item Within-subject variation
+\begin{itemize}
+ \item between
+ \item within
+\end{itemize}
+    \item EEG-performance in general (actual movement (Blokland et al., under review))
     \item Online classification
   \end{itemize}
 \end{frame}
-
 
 \section{Classification scheme}
 
@@ -77,15 +73,18 @@
 \begin{frame}
   \frametitle{Preprocessing + Feature Extraction}
 
-  \begin{itemize}
+  \begin{columns}
+
+  \begin{column}{0.5\textwidth}
+      \begin{itemize}
     \item Preprocessing 
 	\begin{itemize}
 		\item Channel selection
-		\item Channel/trial removal
 		\item Spatial filter
 		\item Detrending
 		\item Windowing
 	\end{itemize}
+	 
     \item Feature Extraction
 	\begin{itemize}
 		\item Welch's method
@@ -93,13 +92,21 @@
 	\end{itemize}
   \end{itemize}
 
-   
+  \end{column}
+ 
+  \begin{column}{0.5\textwidth}
+     \begin{figure}
+  \centering
+     \includegraphics[width=0.8\textwidth]{cap.png}
+ \end{figure}
+  \end{column}
+\end{columns}
 
 \end{frame}
 
 \begin{frame}
-  \frametitle{Classification}
-
+  \frametitle{Classification Pipeline}
+  
   \begin{itemize}
     \item KMeans
     \item Multivariate Gaussian EM
@@ -110,20 +117,30 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Classification}
-  \begin{itemize}
+  \frametitle{Classification Pipeline}
+    \begin{columns}
+
+  \begin{column}{0.5\textwidth}
+\begin{itemize}
     \item KMeans     
     \item Multivariate Gaussian EM
     \item PCA
     \item Logistic Regression
   \end{itemize}
+
+  \end{column}
+ 
+  \begin{column}{0.5\textwidth}
   \begin{figure}
-    \includegraphics[width=0.3\textwidth, right]{chucktesta.jpeg}
+    \includegraphics[width=0.8\textwidth, right]{chucktesta.jpeg}
   \end{figure}
-  Classification at chance level $\rightarrow$ plan B: ERSP classifier with adaptive LR.
+  \end{column}
+\end{columns}
+ \vfill
+    Classification at chance level $\rightarrow$ plan B: ERSP classifier with adaptive LR.
 
 \end{frame}
-
+\section{Experiment setup}
 \begin{frame}
   \frametitle{Stimulation}
 
@@ -133,7 +150,7 @@
 
 \end{frame}
 
-\section{Experimental setup}
+
 
 \begin{frame}
   \frametitle{Pipeline}
@@ -144,20 +161,17 @@
   \end{figure}
 \end{frame}
 
+\section{Results}
 
 \begin{frame}
-  \frametitle{Electrode selection}
+  \frametitle{Class distinctiveness}
 
  \begin{figure}
   \centering
-     \includegraphics[width=0.7\textwidth]{cap.png}
+     \includegraphics[width=1.0\textwidth]{distinction.png}
  \end{figure}
 
 \end{frame}
-
-
-
-\section{Results}
 
 \begin{frame}
 
@@ -170,17 +184,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{WOPWOP}
-
- \begin{figure}
-  \centering
-     \includegraphics[width=1.0\textwidth]{distinction.png}
- \end{figure}
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{AWWW YEAH}
+  \frametitle{Results}
 
  \begin{figure}
   \centering
@@ -192,19 +196,11 @@
 \section{Discussion}
 \begin{frame}
 
-\frametitle{Discussion}
+\frametitle{Take Home Message}
   \begin{itemize}
-   \item Adaptive approach produced sub-optimal results due to the necessity of unsupervised learning
-   \item 
+   \item Adaptive approach produced slightly better results
+   \item More subjects and sessions needed to build prior
   \end{itemize}
-\end{frame}
-
-
-
-\begin{frame}
-
-\frametitle{Take home message}
-The adaptive approach did not work well but decent results were still obtained without training on the specific subject
 \end{frame}
 
 \end{document}
