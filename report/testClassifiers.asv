@@ -280,26 +280,26 @@ for user=1:size(users,2)
     [clsfr,~,~,~] = train_ersp_clsfr(train_set,tr_labels,opt); %train the classifiers on the specified users
     linclasses = zeros(0,0); %classification result from ERSP classifier
     classified = zeros(0,0); %weighted average classifications
-    glmset = zeros(0,0); weights = zeros(0,0); %set of training samples for glm and weights
-    default = erspb_acc(user,1); %the standard performance of ersp classifier on this user
+    glmset = zeros(0,0); weights = zeros(0,0);
+    default = erspb_acc(user,1);
     S = size(test_set,3);
     
     for i=1:S
         sample = test_set(:,:,i);
-        c = apply_ersp_clsfr(sample,clsfr); %get ERSP classifier
+        c = apply_ersp_clsfr(sample,clsfr);
         if (c < 0) c = 2; else c=1; end;
         linclasses(i) = c;
         
-        if (i<10) %skip the first samples to get a feel of the data
-            classified(i,:) = c; %take default classification
+        if (i<10)
+            classified(i,:) = c;
             weights(i,:) = default;
             glmset(i,:) = sample(:);
         else
-            B = glmfit(glmset,(classified-1),'binomial','weights',weights); %train glm on all instances
-            self = glmval(B,sample(:)','logit')+1; %get output from glm
-            w = i/S * 1.3; %apply weighted learning
-            weights(i,:) = (w+default)/2; %set certainty of classification
-            classified(i,:) = round((self*w+c*default)/(w+default)); %take weighted average
+            B = glmfit(glmset,(classified-1),'binomial','weights',weights);
+            self = glmval(B,sample(:)','logit')+1;
+            w = i/S * 1.3;
+            weights(i,:) = (w+default)/2;
+            classified(i,:) = round((self*w+c*default)/(w+default));
             glmset(i,:) = sample(:);
         end
     end
@@ -309,9 +309,10 @@ for user=1:size(users,2)
     
     ad_acc(user,:) = [cp.CorrectRate,cp.Sensitivity,cp.Specificity,sum(diag(cp.DiagnosticTable)),sum(sum(cp.DiagnosticTable))];
 end
-ad_bp = binocdf(ad_acc(:,4), ad_acc(:,5),0.5,'upper'); %does this classifier perform better than chance?
+ad_bp = binocdf(ad_acc(:,4), ad_acc(:,5),0.5,'upper');
+ad_significant = ad_bp<0.05;
 
-figure; hold on; %plot bars with significance asterisks
+figure; hold on;
 Y = [ad_acc(:,1),erspb_acc(:,1)];
 p = [ad_bp,ersp_bp]';
 h = bar(Y,'hist');
