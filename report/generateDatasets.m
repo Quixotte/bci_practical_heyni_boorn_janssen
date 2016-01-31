@@ -1,4 +1,4 @@
-function [ train, labelstr, train_users ] = generateDatasets( left, right, users, T, channels, PCA )
+function [ train, labelstr, train_users ] = generateDatasets( left, right, users, T, channels, PCA)
 fs = 160; %sampling frequency of EEG cap
 
 % Create train and test set
