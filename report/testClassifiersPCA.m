@@ -14,6 +14,7 @@ opt = struct('fs',160,'visualize',0,'badchrm',0,'badtrrm',0,'spatialfilter','sla
     1, 'freqband',[6 8 26 28],'ch_pos',{ch_pos},'capFile','this_cap_best_cap.txt'); %filter in mu and beta frequencies
 [dataset,~,~,~] = preproc_ersp(original,opt); %preprocess the data
 dataset = reshape(dataset,size(dataset,3),size(dataset,1)*size(dataset,2));
+dataset = performPCA(0.8,dataset);
 
 %% Test KMeans within subject
 'KMeans within subject'
@@ -159,47 +160,6 @@ for user=1:size(users,2)
 end
 lr_bp = binocdf(lrb_acc(:,4), lrb_acc(:,5),0.5,'upper');
 
-%% Test ERSP classifier within subject
-'ERSP classifier within subject'
-erspw_acc = zeros(size(users,2),5);
-for user=1:size(users,2)
-    ind = set_users==users(user);
-    subset = original(:,:,ind);
-    N = size(subset,3); K = N;
-    sublabels = labels(ind);
-    
-    indices = crossvalind('Kfold',N,K);
-    cp = classperf(sublabels);
-    for i=1:K
-        train_set = subset(:,:,indices ~= i); tr_labels = sublabels(indices ~= i);
-        test_set = subset(:,:,indices == i); te_labels = sublabels(indices == i);
-        
-        [clsfr,~,~,~] = train_ersp_clsfr(train_set,tr_labels,opt);
-        f = classifyEpoch(test_set,clsfr);
-        classperf(cp,f,indices==i);
-    end
-    erspw_acc(user,:) = [cp.CorrectRate,cp.Sensitivity,cp.Specificity,sum(diag(cp.DiagnosticTable)),sum(sum(cp.DiagnosticTable))];
-end
-% test significance
-ersp_wp = binocdf(erspw_acc(:,4), erspw_acc(:,5),0.5,'upper');
-
-%% Test ERSP classifier between subject
-'ERSP classifier between subject'
-erspb_acc = zeros(size(users,2),5);
-for user=1:size(users,2)
-    train_set = original(:,:,set_users~=users(user)); tr_labels = labels(set_users~=users(user));
-    test_set = original(:,:,set_users==users(user)); te_labels = labels(set_users==users(user));
-    
-    cp = classperf(te_labels);
-    
-    [clsfr,~,~,~] = train_ersp_clsfr(train_set,tr_labels,opt);
-    f = classifyEpoch(test_set,clsfr);
-    classperf(cp,f);
-    
-    erspb_acc(user,:) = [cp.CorrectRate,cp.Sensitivity,cp.Specificity,sum(diag(cp.DiagnosticTable)),sum(sum(cp.DiagnosticTable))];
-end
-ersp_bp = binocdf(erspb_acc(:,4), erspb_acc(:,5),0.5,'upper');
-
 %% Plot between subject diagrams
 names = cell(size(users));
 for i=1:size(names,2)
@@ -207,8 +167,8 @@ for i=1:size(names,2)
 end
 
 figure; hold on;
-Y = [kb_acc(:,1),gb_acc(:,1),lrb_acc(:,1),erspb_acc(:,1),];
-p = [k_bp,g_bp,lr_bp,ersp_bp]';
+Y = [kb_acc(:,1),gb_acc(:,1),lrb_acc(:,1)];
+p = [k_bp,g_bp,lr_bp]';
 h = bar(Y,'hist');
 x=cell2mat(get(h,'Xdata'));
 y=cell2mat(get(h,'Ydata'));
@@ -238,8 +198,8 @@ xlim([0.5 size(names,2)+0.5]); ylim([0 1]);
 
 %% Plot within subject diagrams
 figure; hold on;
-Y = [kw_acc(:,1),gw_acc(:,1),lrw_acc(:,1),erspw_acc(:,1)];
-p = [k_wp,g_wp,lr_wp,ersp_wp]';
+Y = [kw_acc(:,1),gw_acc(:,1),lrw_acc(:,1)];
+p = [k_wp,g_wp,lr_wp]';
 h = bar(Y,'hist');
 x=cell2mat(get(h,'Xdata'));
 y=cell2mat(get(h,'Ydata'));
@@ -262,7 +222,7 @@ for i = 1:size(ytop,2)
     end
 end
 plot(0:size(names,2)+1,ones(size(names,2)+2,1)*0.5,'r','LineWidth',3);
-legend('KMeans','Gaussian Mixture model','Logistic regression','ERSP classifier','chance level');
+legend('KMeans','Gaussian Mixture model','Logistic regression','chance level');
 set(gca, 'XTickLabel',names, 'XTick',1:numel(names));
 title('Within subject');
 xlim([0.5 size(names,2)+0.5]); ylim([0 1]);

@@ -113,7 +113,7 @@ end
 %1) Detrend
 if ( opts.detrend )
   if ( isequal(opts.detrend,1) )
-    fprintf('1) Detrend\n');
+%     fprintf('1) Detrend\n');
     X=detrend(X,2); % detrend over time
   elseif ( isequal(opts.detrend,2) )
     fprintf('1) Center\n');
@@ -124,7 +124,7 @@ end
 %2) Bad channel identification & removal
 isbadch=[]; chthresh=[];
 if ( opts.badchrm || ~isempty(opts.badCh) )
-  fprintf('2) bad channel removal, ');
+%   fprintf('2) bad channel removal, ');
   isbadch = false(size(X,1),1);
   if ( ~isempty(ch_names) )    isbadch(numel(ch_names)+1:end)=true; end;
   if ( ~isempty(opts.badCh) )  isbadch(opts.badCh)=true; end
@@ -158,7 +158,7 @@ if ( size(X,1)> 5 ) % only spatial filter if enough channels
   sftype=lower(opts.spatialfilter);
   switch ( sftype )
    case 'slap';
-    fprintf('3) Slap\n');
+%     fprintf('3) Slap\n');
     if ( ~isempty(ch_pos) )       
       R=sphericalSplineInterpolate(ch_pos,ch_pos,[],[],'slap');%pre-compute the SLAP filter we'll use
     else
@@ -216,7 +216,7 @@ if ( opts.badtrrm )
 end;
 
 %4) welch to convert to power spectral density
-fprintf('4) Welch\n');
+% fprintf('4) Welch\n');
 [X,wopts,winFn]=welchpsd(X,2,'width_ms',opts.width_ms,'windowType',opts.windowType,'fs',fs,...
                          'aveType',opts.aveType,'detrend',1); 
 freqs=0:(1000/opts.width_ms):fs/2; % position of the frequency bins

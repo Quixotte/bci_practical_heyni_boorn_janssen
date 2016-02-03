@@ -17,7 +17,7 @@ classdef GaussianEM < handle
             p = zeros(size(datapoints,1),1);
             for i=1:size(datapoints,1)
                 P = zeros(1,this.K);
-                for k=1:this.K
+                for k=1:this.K                    
                     P(k) = mvnpdf(datapoints(i,:),this.Mu(k,:),this.Sigma(:,:,k));
                 end
                 
@@ -66,8 +66,10 @@ classdef GaussianEM < handle
                     end
                     this.Sigma(:,:,k) = this.Sigma(:,:,k)./Nk(k);
                     
-                    while ~all(eig(this.Sigma(:,:,k)) > 0)
+                    [~,p] = chol(this.Sigma(:,:,k));
+                    while p > 0
                         this.Sigma(:,:,k) = this.Sigma(:,:,k)+eye(this.D).*rand(this.D,this.D);
+                        [~,p] = chol(this.Sigma(:,:,k));
                     end
                 end
                 this.Pi = Nk./N;

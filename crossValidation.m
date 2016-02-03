@@ -136,6 +136,7 @@ glmset = zeros(0,0); weights = zeros(0,0);
 default = 0.5989;
 S = 900;
 for i=1:S%size(train,3)
+    i
     sample = test(:,:,i);
     s2 = preproc_ersp(sample,opt);
     c = getClass(sample);

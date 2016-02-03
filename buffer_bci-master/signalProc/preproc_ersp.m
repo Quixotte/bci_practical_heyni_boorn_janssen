@@ -113,7 +113,7 @@ end
 %1) Detrend
 if ( opts.detrend )
   if ( isequal(opts.detrend,1) )
-    fprintf('1) Detrend\n');
+%     fprintf('1) Detrend\n');
     X=detrend(X,2); % detrend over time
   elseif ( isequal(opts.detrend,2) )
     fprintf('1) Center\n');
@@ -124,7 +124,7 @@ end
 %2) Bad channel identification & removal
 isbadch=[]; chthresh=[];
 if ( opts.badchrm || ~isempty(opts.badCh) )
-  fprintf('2) bad channel removal, ');
+%   fprintf('2) bad channel removal, ');
   isbadch = false(size(X,1),1);
   if ( ~isempty(ch_names) )    isbadch(numel(ch_names)+1:end)=true; end;
   if ( ~isempty(opts.badCh) )  isbadch(opts.badCh)=true; end
@@ -140,7 +140,7 @@ if ( opts.badchrm || ~isempty(opts.badCh) )
     ch_names=ch_names(~isbadch(1:numel(ch_names)));
   end
   end
-  fprintf('%d ch removed\n',sum(isbadch));
+%   fprintf('%d ch removed\n',sum(isbadch));
 end
 
 %2.2) time range selection
@@ -158,7 +158,7 @@ if ( size(X,1)> 5 ) % only spatial filter if enough channels
   sftype=lower(opts.spatialfilter);
   switch ( sftype )
    case 'slap';
-    fprintf('3) Slap\n');
+%     fprintf('3) Slap\n');
     if ( ~isempty(ch_pos) )       
       R=sphericalSplineInterpolate(ch_pos,ch_pos,[],[],'slap');%pre-compute the SLAP filter we'll use
     else
@@ -216,7 +216,7 @@ if ( opts.badtrrm )
 end;
 
 %4) welch to convert to power spectral density
-fprintf('4) Welch\n');
+% fprintf('4) Welch\n');
 [X,wopts,winFn]=welchpsd(X,2,'width_ms',opts.width_ms,'windowType',opts.windowType,'fs',fs,...
                          'aveType',opts.aveType,'detrend',1); 
 freqs=0:(1000/opts.width_ms):fs/2; % position of the frequency bins
@@ -224,7 +224,7 @@ freqs=0:(1000/opts.width_ms):fs/2; % position of the frequency bins
 %5) sub-select the range of frequencies we care about
 fIdx=[];
 if ( ~isempty(opts.freqband) && size(X,2)>10 && ~isempty(fs) ) 
-  fprintf('5) Select frequencies\n');
+%   fprintf('5) Select frequencies\n');
   if ( isnumeric(opts.freqband) )
     if ( numel(opts.freqband)>2 ) % convert the diff band spects to upper/lower frequencies
       if ( numel(opts.freqband)==3 ) opts.freqband=opts.freqband([1 3]);

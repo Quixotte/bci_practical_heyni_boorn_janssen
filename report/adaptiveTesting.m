@@ -1,28 +1,32 @@
 clear all; clc;
-load('dataset/ch_pos.mat'); %load eeg channel position
-load('dataset/left.mat'); %load data for the left hand
-load('dataset/right.mat'); %load data for the right hand
-users = [42,32,7,53,54];
-channels = 1:21;
-[original, labels, set_users] = generateDatasets(left(1:100,:),right(1:100,:),users,2,channels,0);
+load('data_hector_train.mat');
+[setHector,labelsHector] = getSet(windows);
+
+load('data_stef_train.mat');
+[setStef,labelsStef] = getSet(windows);
+
+load('data_thomas_train.mat');
+[setThomas,labelsThomas] = getSet(windows);
+
+SET = cat(3,setHector,setStef,setThomas);
+LABELS = cat(2,labelsHector,labelsStef,labelsThomas);
+USERS = [ones(900,1);ones(900,1)*2;ones(900,1)*3];
+names = {'Héctor','Stef','Thomas'};
 
 channel_names = ['FC5';'FC3';'FC1';'FCz';'FC2';'FC4';'FC6';...
     'C6 ';'C4 ';'C2 ';'Cz ';'C1 ';'C3 ';'C5 ';...
     'CP5';'CP3';'CP1';'CPz';'CP2';'CP4';'CP6'];
 ch_pos = cellstr(channel_names);
-opt = struct('fs',160,'visualize',0,'badchrm',0,'badtrrm',0,'spatialfilter','slap','detrend',...
-    1, 'freqband',[6 8 26 28],'ch_pos',{ch_pos},'capFile','this_cap_best_cap.txt'); %filter in mu and beta frequencies
-[dataset,~,~,~] = preproc_ersp(original,opt); %preprocess the data
-dataset = reshape(dataset,size(dataset,3),size(dataset,1)*size(dataset,2));
+opt = struct('fs',256,'visualize',0,'badchrm',0,'badtrrm',0,'spatialfilter','slap','detrend',...
+    1, 'freqband',[6 8 26 28],'ch_pos',{ch_pos},'capFile','this_cap_best_cap.txt');
 
 %% Test ERSP classifier between subject
 'ERSP classifier between subject'
-N = size(users,2);
-erspb_acc = zeros(N,5);
-for user=1:size(users,2)
+erspb_acc = zeros(3,5);
+for user=1:3
     user
-    train_set = original(:,:,set_users~=users(user)); tr_labels = labels(set_users~=users(user));
-    test_set = original(:,:,set_users==users(user)); te_labels = labels(set_users==users(user));
+    train_set = SET(:,:,USERS~=user); tr_labels = LABELS(USERS~=user);
+    test_set = SET(:,:,USERS==user); te_labels = LABELS(USERS==user);
     
     cp = classperf(te_labels);
     [clsfr,~,~,~] = train_ersp_clsfr(train_set,tr_labels,opt);
@@ -33,43 +37,74 @@ for user=1:size(users,2)
 end
 ersp_bp = binocdf(erspb_acc(:,4), erspb_acc(:,5),0.5,'upper');
 
+%% Test ERSP classifier within subject
+'ERSP classifier within subject'
+erspw_acc = zeros(3,5);
+K = 10;
+for user=1:3
+    user
+    dataset = SET(:,:,USERS==user);
+    labelstr = LABELS(USERS==user);
+    
+    IND = crossvalind('Kfold', size(dataset,3), K); %train on 90% test on the rest
+    cp = classperf(labelstr);
+    for k=1:K
+        test_ind = (IND == k); train_ind = ~test_ind;
+        
+        train_set = dataset(:,:,train_ind); train_labels = labelstr(train_ind,:);
+        test_set = dataset(:,:,test_ind); test_labels = labelstr(test_ind,:);
+        
+        [clsfr,~,~,~] = train_ersp_clsfr(train_set,train_labels,opt);
+        f = classifyEpoch(test_set,clsfr);
+        classperf(cp,f,test_ind);
+    end
+    
+    erspw_acc(user,:) = [cp.CorrectRate,cp.Sensitivity,cp.Specificity,sum(diag(cp.DiagnosticTable)),sum(sum(cp.DiagnosticTable))];
+end
+ersp_wp = binocdf(erspw_acc(:,4), erspw_acc(:,5),0.5,'upper');
+
 %% Test adaptive classifier and plot it (between subject)
 'Adaptive classifier between subject'
-ad_acc = zeros(size(users,2),5);
-for user=1:size(users,2)
+warning('off','all');
+ad_acc = zeros(3,5);
+for user=1:3
     user
     %create train and test sets (leave one out crossvalidation)
-    train_set = original(:,:,set_users~=users(user)); tr_labels = labels(set_users~=users(user));
-    test_set = original(:,:,set_users==users(user)); te_labels = labels(set_users==users(user));
+    train_set = SET(:,:,USERS~=user); tr_labels = LABELS(USERS~=user);
+    test_set = SET(:,:,USERS==user); te_labels = LABELS(USERS==user);
     
     cp = classperf(te_labels);
     
     %train the classifiers on the specified users
     [clsfr,~,~,~] = train_ersp_clsfr(train_set,tr_labels,opt);
-    f = classifyEpoch(test_set,clsfr);
-    classperf(cp,f);
     linclasses = zeros(0,0); %classification result from ERSP classifier
     classified = zeros(0,0); %weighted average classifications
     glmset = zeros(0,0); weights = zeros(0,0); %set of training samples for glm and weights
-    default = erspb_acc(user,1); %the standard performance of ersp classifier on this user
+    default = 0.5989;%erspb_acc(user,1); %the standard performance of ersp classifier on this user
     S = size(test_set,3);
     
     for i=1:S
+        if (mod(i,50)==0)
+            i
+        end
         sample = test_set(:,:,i);
+        s2 = preproc_ersp(sample,opt);
         c = classifyEpoch(sample,clsfr); %get ERSP classifier
         linclasses(i) = c;
         
         if (i<10) %skip the first samples to get a feel of the data
             classified(i,:) = c; %take default classification
             weights(i,:) = default;
-            glmset(i,:) = sample(:);
+            glmset(i,:) = s2(:);
         else
-            B = glmfit(glmset,(classified-1),'binomial','weights',weights); %train glm on all instances
-            self = glmval(B,sample(:)','logit')+1; %get output from glm
+%             if (mod(i,5)==0)
+                B = glmfit(glmset,(classified-1),'binomial','weights',weights); %train glm on all instances
+%             end
+            self = glmval(B,s2(:)','logit')+1; %get output from glm
             w = i/S * 1.3; %apply weighted learning
             weights(i,:) = (w+default)/2; %set certainty of classification
             classified(i,:) = round((self*w+c*default)/(w+default)); %take weighted average
-            glmset(i,:) = sample(:);
+            glmset(i,:) = s2(:);
         end
     end
     classperf(cp,classified);
@@ -79,9 +114,11 @@ end
 ad_bp = binocdf(ad_acc(:,4), ad_acc(:,5),0.5,'upper'); %does this classifier perform better than chance?
 
 %%
+p = sum(erspb_acc(:,4))/sum(erspb_acc(:,5));
+p = binocdf(sum(ad_acc(:,4)), sum(ad_acc(:,5)),p,'upper')
 figure; hold on; %plot bars with significance asterisks
-Y = [ad_acc(:,1),erspb_acc(:,1)];
-p = [ad_bp,ersp_bp]';
+Y = [erspw_acc(:,1),erspb_acc(:,1),ad_acc(:,1)];
+p = [ersp_wp,ersp_bp,ad_bp]';
 h = bar(Y,'hist');
 
 %draw significance labels with only 20 lines of code (yeah matlab woohoo)!
@@ -105,7 +142,7 @@ for i = 1:size(ytop,2)
     end
 end
 plot(0:size(names,2)+1,ones(size(names,2)+2,1)*0.5,'r','LineWidth',3);
-legend('KMeans','Gaussian Mixture model','Logistic regression','ERSP classifier','chance level');
+legend('Within subject ERSP','Between subject ERSP','Between subject adaptive classifier','chance level');
 set(gca, 'XTickLabel',names, 'XTick',1:numel(names));
-title(['Within subject, p = ',num2str(signrank(erspb_acc(:,4),ad_acc(:,4)))]);
+title('Classification comparisson');
 xlim([0.5 size(names,2)+0.5]); ylim([0 1]);
