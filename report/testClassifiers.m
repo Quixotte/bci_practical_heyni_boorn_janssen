@@ -270,3 +270,14 @@ legend('KMeans','Gaussian Mixture model','Logistic regression','ERSP classifier'
 set(gca, 'XTickLabel',names, 'XTick',1:numel(names));
 title('Within subject');
 xlim([0.5 size(names,2)+0.5]); ylim([0 1]);
+
+%% Visualization
+figure;
+[X,~,~,~] = preproc_ersp(original,opt);
+c1 = mean(X(:,:,labels(:,1)==1),3);
+c2 = mean(X(:,:,labels(:,1)==2),3);
+for i=1:21
+    subplot(3,7,i); hold on;
+    plot(c1(i,:)); plot(c2(i,:)); legend('l','r');
+    title(channel_names(i,:));
+end
