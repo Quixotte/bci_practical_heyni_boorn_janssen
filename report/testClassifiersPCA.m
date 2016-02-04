@@ -4,7 +4,10 @@ load('dataset/left.mat'); %load data for the left hand
 load('dataset/right.mat'); %load data for the right hand
 users = [42,32,7,53,54,2,49];
 channels = 1:21;
-[original, labels, set_users] = generateDatasets(left(1:100,:),right(1:100,:),users,2,channels,0);
+kmeans_clusters = 5;
+gmm_clusters = 10;
+gmm_iter = 1;
+[original, labels, set_users] = generateDatasets(left(1:100,:),right(1:100,:),users,2,channels,160);
 
 channel_names = ['FC5';'FC3';'FC1';'FCz';'FC2';'FC4';'FC6';...
     'C6 ';'C4 ';'C2 ';'Cz ';'C1 ';'C3 ';'C5 ';...

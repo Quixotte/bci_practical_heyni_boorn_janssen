@@ -1,3 +1,7 @@
+% this script loads the data sets, preprocesses it and test ERSP
+% within-subject, ERSP between-subject and the adaptive classifier on this
+% data set
+
 clear all; clc;
 load('data_hector_train.mat');
 [setHector,labelsHector] = getSet(windows);
@@ -8,8 +12,8 @@ load('data_stef_train.mat');
 load('data_thomas_train.mat');
 [setThomas,labelsThomas] = getSet(windows);
 
-SET = cat(3,setHector,setStef,setThomas);
-LABELS = cat(2,labelsHector,labelsStef,labelsThomas);
+SET = cat(3,setHector,setStef,setThomas); %concatenate the sets
+LABELS = cat(2,labelsHector,labelsStef,labelsThomas);%concatenate the labels
 USERS = [ones(900,1);ones(900,1)*2;ones(900,1)*3];
 names = {'Héctor','Stef','Thomas'};
 
@@ -25,17 +29,18 @@ opt = struct('fs',256,'visualize',0,'badchrm',0,'badtrrm',0,'spatialfilter','sla
 erspb_acc = zeros(3,5);
 for user=1:3
     user
-    train_set = SET(:,:,USERS~=user); tr_labels = LABELS(USERS~=user);
-    test_set = SET(:,:,USERS==user); te_labels = LABELS(USERS==user);
+    train_set = SET(:,:,USERS~=user); tr_labels = LABELS(USERS~=user); %train on all but one user
+    test_set = SET(:,:,USERS==user); te_labels = LABELS(USERS==user); %test on the remaining user
     
     cp = classperf(te_labels);
     [clsfr,~,~,~] = train_ersp_clsfr(train_set,tr_labels,opt);
     f = classifyEpoch(test_set,clsfr);
     classperf(cp,f);
     
+    %calculate classifier performance
     erspb_acc(user,:) = [cp.CorrectRate,cp.Sensitivity,cp.Specificity,sum(diag(cp.DiagnosticTable)),sum(sum(cp.DiagnosticTable))];
 end
-ersp_bp = binocdf(erspb_acc(:,4), erspb_acc(:,5),0.5,'upper');
+ersp_bp = binocdf(erspb_acc(:,4), erspb_acc(:,5),0.5,'upper'); %calculate one-sided binomial test
 
 %% Test ERSP classifier within subject
 'ERSP classifier within subject'
@@ -46,22 +51,22 @@ for user=1:3
     dataset = SET(:,:,USERS==user);
     labelstr = LABELS(USERS==user);
     
-    IND = crossvalind('Kfold', size(dataset,3), K); %train on 90% test on the rest
+    IND = crossvalind('Kfold', size(dataset,3), K); %train on 90%, test on the rest
     cp = classperf(labelstr);
     for k=1:K
         test_ind = (IND == k); train_ind = ~test_ind;
         
-        train_set = dataset(:,:,train_ind); train_labels = labelstr(train_ind,:);
-        test_set = dataset(:,:,test_ind); test_labels = labelstr(test_ind,:);
+        train_set = dataset(:,:,train_ind); train_labels = labelstr(train_ind,:); %train on 90% of data
+        test_set = dataset(:,:,test_ind); test_labels = labelstr(test_ind,:); %test on remaining 10%
         
         [clsfr,~,~,~] = train_ersp_clsfr(train_set,train_labels,opt);
         f = classifyEpoch(test_set,clsfr);
         classperf(cp,f,test_ind);
     end
-    
+    %calculate classifier performance
     erspw_acc(user,:) = [cp.CorrectRate,cp.Sensitivity,cp.Specificity,sum(diag(cp.DiagnosticTable)),sum(sum(cp.DiagnosticTable))];
 end
-ersp_wp = binocdf(erspw_acc(:,4), erspw_acc(:,5),0.5,'upper');
+ersp_wp = binocdf(erspw_acc(:,4), erspw_acc(:,5),0.5,'upper');%calculate one-sided binomial test
 
 %% Test adaptive classifier and plot it (between subject)
 'Adaptive classifier between subject'
@@ -80,11 +85,11 @@ for user=1:3
     linclasses = zeros(0,0); %classification result from ERSP classifier
     classified = zeros(0,0); %weighted average classifications
     glmset = zeros(0,0); weights = zeros(0,0); %set of training samples for glm and weights
-    default = 0.5989;%erspb_acc(user,1); %the standard performance of ersp classifier on this user
+    default = 0.5989;%the standard performance of ersp classifier on this user, optimized
     S = size(test_set,3);
     
     for i=1:S
-        if (mod(i,50)==0)
+        if (mod(i,50)==0) %training can be slow, so show intermediate output
             i
         end
         sample = test_set(:,:,i);
@@ -97,9 +102,7 @@ for user=1:3
             weights(i,:) = default;
             glmset(i,:) = s2(:);
         else
-%             if (mod(i,5)==0)
-                B = glmfit(glmset,(classified-1),'binomial','weights',weights); %train glm on all instances
-%             end
+            B = glmfit(glmset,(classified-1),'binomial','weights',weights); %train glm on all instances
             self = glmval(B,s2(:)','logit')+1; %get output from glm
             w = i/S * 1.3; %apply weighted learning
             weights(i,:) = (w+default)/2; %set certainty of classification
@@ -109,6 +112,7 @@ for user=1:3
     end
     classperf(cp,classified);
     
+    %calculate classifier performance
     ad_acc(user,:) = [cp.CorrectRate,cp.Sensitivity,cp.Specificity,sum(diag(cp.DiagnosticTable)),sum(sum(cp.DiagnosticTable))];
 end
 ad_bp = binocdf(ad_acc(:,4), ad_acc(:,5),0.5,'upper'); %does this classifier perform better than chance?
@@ -117,8 +121,8 @@ ad_bp = binocdf(ad_acc(:,4), ad_acc(:,5),0.5,'upper'); %does this classifier per
 p = sum(erspb_acc(:,4))/sum(erspb_acc(:,5));
 p = binocdf(sum(ad_acc(:,4)), sum(ad_acc(:,5)),p,'upper')
 figure; hold on; %plot bars with significance asterisks
-Y = [erspw_acc(:,1),erspb_acc(:,1),ad_acc(:,1)];
-p = [ersp_wp,ersp_bp,ad_bp]';
+Y = [erspw_acc(:,1),erspb_acc(:,1),ad_acc(:,1)]; %performance of the classifiers
+p = [ersp_wp,ersp_bp,ad_bp]'; %significance of classifiers
 h = bar(Y,'hist');
 
 %draw significance labels with only 20 lines of code (yeah matlab woohoo)!

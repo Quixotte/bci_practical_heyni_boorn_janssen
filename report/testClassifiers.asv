@@ -153,7 +153,7 @@ for user=1:size(users,2)
     
     cp = classperf(te_labels);
     
-    B = glmfit(train_set,tr_labels-1,'binomial'); %fit logistic regression to it (binary case)
+    B = glmfit(train_set,tr_labels-1,'binomial'); %fit logistic 
     f = round(glmval(B,test_set,'logit'))+1;
     classperf(cp,f);
     
@@ -176,7 +176,7 @@ for user=1:size(users,2)
         train_set = subset(:,:,indices ~= i); tr_labels = sublabels(indices ~= i);%train on all but one datapoints
         test_set = subset(:,:,indices == i); te_labels = sublabels(indices == i); %test on remaining data point
         
-        [clsfr,~,~,~] = train_ersp_clsfr(train_set,tr_labels,opt); %train standard ersp classifier
+        [clsfr,~,~,~] = train_ersp_clsfr(train_set,tr_labels,opt);
         f = classifyEpoch(test_set,clsfr);
         classperf(cp,f,indices==i);
     end
@@ -194,7 +194,7 @@ for user=1:size(users,2)
     
     cp = classperf(te_labels);
     
-    [clsfr,~,~,~] = train_ersp_clsfr(train_set,tr_labels,opt); %train standard ersp classifier
+    [clsfr,~,~,~] = train_ersp_clsfr(train_set,tr_labels,opt);
     f = classifyEpoch(test_set,clsfr);
     classperf(cp,f);
     
@@ -209,13 +209,12 @@ for i=1:size(names,2)
 end
 
 figure; hold on;
-Y = [kb_acc(:,1),gb_acc(:,1),lrb_acc(:,1),erspb_acc(:,1),]; %performance on each classifier
-p = [k_bp,g_bp,lr_bp,ersp_bp]'; %significance
+Y = [kb_acc(:,1),gb_acc(:,1),lrb_acc(:,1),erspb_acc(:,1),];
+p = [k_bp,g_bp,lr_bp,ersp_bp]';
 h = bar(Y,'hist');
 x=cell2mat(get(h,'Xdata'));
 y=cell2mat(get(h,'Ydata'));
 
-%draw significance labels with only 20 lines of code (yeah matlab woohoo)!
 xcenter = 0.5*(x(2:4:end,:)+x(3:4:end,:));
 ytop = y(2:4:end,:);
 for i = 1:size(ytop,2)
@@ -241,13 +240,12 @@ xlim([0.5 size(names,2)+0.5]); ylim([0 1]);
 
 %% Plot within subject diagrams
 figure; hold on;
-Y = [kw_acc(:,1),gw_acc(:,1),lrw_acc(:,1),erspw_acc(:,1)]; %performance on each classifier
-p = [k_wp,g_wp,lr_wp,ersp_wp]'; %significance
+Y = [kw_acc(:,1),gw_acc(:,1),lrw_acc(:,1),erspw_acc(:,1)];
+p = [k_wp,g_wp,lr_wp,ersp_wp]';
 h = bar(Y,'hist');
 x=cell2mat(get(h,'Xdata'));
 y=cell2mat(get(h,'Ydata'));
 
-%draw significance labels with only 20 lines of code (yeah matlab woohoo)!
 xcenter = 0.5*(x(2:4:end,:)+x(3:4:end,:));
 ytop = y(2:4:end,:);
 for i = 1:size(ytop,2)
