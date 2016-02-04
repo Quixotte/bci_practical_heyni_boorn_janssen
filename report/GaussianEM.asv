@@ -52,7 +52,6 @@ classdef GaussianEM < handle
                     for k=1:this.K
                         Gamma(n,k) = this.Pi(k)*mvnpdf(X(n,:),this.Mu(k,:),this.Sigma(:,:,k));
                     end
-                    
                     if max(Gamma(n,:) == 0)
                         Gamma(n,:) = rand(1,this.K);
                     end
@@ -69,15 +68,15 @@ classdef GaussianEM < handle
                     end
                     this.Sigma(:,:,k) = this.Sigma(:,:,k)./Nk(k);
                     
-                    [~,p] = chol(this.Sigma(:,:,k)); %covariance must be positive definitive
-                    while p > 0 %matrix is not positive definitive
+                    [~,p] = chol(this.Sigma(:,:,k)); %covariance 
+                    while p > 0
                         this.Sigma(:,:,k) = this.Sigma(:,:,k)+eye(this.D).*rand(this.D,this.D);
                         [~,p] = chol(this.Sigma(:,:,k));
                     end
                 end
                 this.Pi = Nk./N;
                 
-                if(show) %show intermediate output
+                if(show)
                     if (calc_log)
                         %calculate log likelihood
                         log_likelihood = 0;

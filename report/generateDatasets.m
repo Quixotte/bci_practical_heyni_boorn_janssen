@@ -1,5 +1,7 @@
-function [ train, labelstr, train_users ] = generateDatasets( left, right, users, T, channels, PCA)
-fs = 160; %sampling frequency of EEG cap
+function [ train, labelstr, train_users ] = generateDatasets( left, right, users, T, channels, fs)
+%This function takes a left and right database and combines them with
+%correct labels (1=left, 2=right) and performs channel selection and
+%subject selection
 
 % Create train and test set
 N = size(left,1); %number of users in total
@@ -23,6 +25,7 @@ for user = 1:N
                 sz = size(set(:,:,trial),2);
                 start = round(sz/2-samples/2);
                 
+                %get sample from middle of trial for accurate results
                 train(:,:,tr) = set(channels,start:start+samples-1,trial);
                 labelstr(tr) = code;
                 train_users(tr,1) = user;
