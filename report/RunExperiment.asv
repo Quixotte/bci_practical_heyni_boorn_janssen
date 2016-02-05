@@ -1,0 +1,71 @@
+try; cd(fileparts(mfilename('fullpath')));catch; end;
+run buffer_bci-master/utilities/initPaths.m;
+
+classifierFile = 'classifier_Thomas.mat';%The classifier that needs to be run
+windowlength = 2; %In seconds
+resultsFileName = 'Data_Thomas_TEST.mat';
+
+load(classifierFile);
+
+buffhost='localhost';
+buffport=1972;
+
+phaseToRun=[];
+while ( isempty(phaseToRun) || ~isstruct(phaseToRun) || (phaseToRun.nchans==0) ) % wait for the buffer to contain valid data
+  try 
+    phaseToRun=buffer('get_hdr',[],buffhost,buffport); 
+  catch
+    phaseToRun=[];
+    fprintf('Invalid header info... waiting.\n');
+  end;
+  pause(1);
+end;
+
+trlen_samp = windowLength*phaseToRun.fsample; % #samples per epoch
+% set the real-time-clock to use
+
+initgetwTime;
+initsleepSec;
+state = [];
+windows = cell(10000,1);
+endTest = 0;
+epoch = 1;
+trialNumber = 1;
+%While we wait for the experiment to end
+while (~endTest)
+  %Wait for a stimulus.epoch event, and if it occurs get the data.
+  [data,devents,state]=buffer_waitData([],[],state,'startSet',{'stimulus.epoch'},'trlen_samp',trlen_samp,'exitSet',{'data' {'stimulus.sequences' 'stimulus.trial'} 'end'});
+  for ei=1:numel(devents)
+        event=devents(ei);
+        if( strcmp('stimulus.trial',event.type) && strcmp('end',event.value) ) % end event 
+          fprintf('Discarding all subsequent events: exit\n');
+          break;
+        end;
+        if( strcmp('stimulus.sequences',event.type) && strcmp('end',event.value) ) % end Test 
+          fprintf('Discarding all subsequent events: exit\n');
+          endTest = 1;
+          break;
+        end;
+        windows{epoch,1} = data;
+        
+        %Get car position and incomming car position for the records.
+        trial_tuple = strsplit(event.value,',');
+        windows{epoch,2} = trial_tuple(1);
+        windows{epoch,3} = trial_tuple(2);
+        
+        %Insert Hector Classification
+        C = classifyEpoch(data.buf,clsfr);
+        C = 3 - C; %data is trained on where the incoming car is, not where you should be
+        C = num2str(C);
+        
+        windows{epoch,4} = C;
+    
+        %Send feedback event
+        sendEvent('feedback',C);
+        epoch = epoch + 1;
+
+    end
+end
+
+windows = windows(1:epoch,:);
+save(resultsFileName,'windows');
